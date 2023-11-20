@@ -1,8 +1,9 @@
 const express = require('express');
-const router = express.Router();
 
-router.get('/', async (req, res) => {
-    res.send('Hello World');
-});
+const authRouter = require('./auth.router');
 
-module.exports = router;
+const routerApi = (app) => {
+    app.use('/auth', authRouter);
+}
+
+module.exports = routerApi;

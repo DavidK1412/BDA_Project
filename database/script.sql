@@ -1,6 +1,6 @@
 CREATE DATABASE BuenAutoDB;
 
-\c BuenAutoDB;
+\c buenautodb;
 
 CREATE TABLE Ciudad
 (
@@ -132,3 +132,26 @@ CREATE TABLE Compra(
     FOREIGN KEY (id_auto) REFERENCES AutoMotor (id) ON DELETE CASCADE,
     FOREIGN KEY (id_empleado) REFERENCES Empleado (codigo) ON DELETE CASCADE
 );
+
+-- Obtiene el Empleado que tiene el usuario 'DavidK1412'
+SELECT codigo_empleado FROM Usuario WHERE usuario = 'DavidK1412'
+SELECT * FROM Empleado WHERE codigo = (SELECT codigo_empleado FROM Usuario WHERE usuario = 'DavidK1412');
+
+CREATE VIEW Empleados_Username AS
+    SELECT
+        u.usuario AS usuario,
+        e.codigo AS codigo,
+        e.cedula AS cedula,
+        e.nombre AS nombre,
+        e.salario AS salario,
+        e.fecha_nacimiento AS fecha_nacimiento,
+        e.fecha_ingreso AS fecha_ingreso,
+        e.id_cargo AS id_cargo,
+        e.id_sucursal AS id_sucursal
+    FROM
+        Usuario u,
+        Empleado e
+    WHERE
+        u.codigo_empleado = e.codigo;
+
+SELECT * FROM Empleados_Username;

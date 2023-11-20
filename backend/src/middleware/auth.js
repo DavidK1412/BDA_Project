@@ -1,21 +1,23 @@
-const jwt = require('jsonwebtoken');
+// TODO: add bcrpt implementation, static salt
+const jwt = require('./jwt');
+const userService = require('../services/user.service');
+const employeeService = require('../services/employee.service');
 
-module.exports = function(req, res, next) {
-  // Get token from header
-  const token = req.header('x-auth-token');
+const login = async(username, password) => {
+    const user = await userService.getUserByUsername(username);
+    const employee = await employeeService.getEmployeeByUsername(username);
 
-  // Check if no token
-  if (!token) {
-    return res.status(401).json({ msg: 'No token, authorization denied' });
-  }
+    if (!user || !employee) {
+        return false;
+    }
+    if (user?.contrasena === password){
+        const token = jwt.generateToken({
+            id: user.id,
+            role: employee.id_cargo
+        });
+        return { token: token };
+    }
+    return true;
+}
 
-  // Verify token
-  try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
-    req.user = decoded.user;
-    next();
-  } catch (err) {
-    res.status(401).json({ msg: 'Token is not valid' });
-  }
-};
+module.exports = {login};
