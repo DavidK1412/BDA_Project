@@ -6,7 +6,7 @@ const logIn = async (req, res) => {
     if (token) {
         return res.status(200).json(token);
     }
-    return res.status(401).json({message: 'Unauthorized'});
+    return res.status(401).json({"message": "Invalid username or password"});
 };
 
 module.exports = { logIn };

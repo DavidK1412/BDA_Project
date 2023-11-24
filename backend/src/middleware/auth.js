@@ -17,7 +17,7 @@ const login = async(username, password) => {
         });
         return { token: token };
     }
-    return true;
+    return false;
 }
 
 module.exports = {login};
