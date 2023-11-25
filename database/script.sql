@@ -92,15 +92,23 @@ CREATE TABLE Tipo
     nombre VARCHAR(50) NOT NULL
 );
 
+CREATE TABLE Marca
+(
+    id     VARCHAR(36) PRIMARY KEY,
+    nombre VARCHAR(50) NOT NULL
+);
+
 CREATE TABLE AutoMotor
 (
     id          VARCHAR(36) PRIMARY KEY,
     modelo      VARCHAR(4),
     chasis      VARCHAR(20) NOT NULL,
+    id_marca    VARCHAR(36) NOT NULL,
     id_color    VARCHAR(36) NOT NULL,
     id_linea    VARCHAR(36) NOT NULL,
     id_tipo     INT         NOT NULL,
     id_sucursal VARCHAR(36) NOT NULL,
+    FOREIGN KEY (id_marca) REFERENCES Marca (id) ON DELETE CASCADE,
     FOREIGN KEY (id_color) REFERENCES Color (id) ON DELETE CASCADE,
     FOREIGN KEY (id_linea) REFERENCES Linea (id) ON DELETE CASCADE,
     FOREIGN KEY (id_tipo) REFERENCES Tipo (id) ON DELETE CASCADE,
@@ -132,6 +140,20 @@ CREATE TABLE Compra(
     FOREIGN KEY (id_auto) REFERENCES AutoMotor (id) ON DELETE CASCADE,
     FOREIGN KEY (id_empleado) REFERENCES Empleado (codigo) ON DELETE CASCADE
 );
+
+--- Trigger para generar el codigo del empleado
+CREATE OR REPLACE FUNCTION generar_codigo_empleado()
+    RETURNS TRIGGER AS
+$$
+DECLARE
+    codigo VARCHAR(15);
+BEGIN
+    codigo := 'CC' || SUBSTRING(NEW.cedula, 1, 2) || SUBSTRING(NEW.nombre, 1, 1) || SUBSTRING(NEW.nombre, 2, 1);
+    NEW.codigo := codigo;
+    RETURN NEW;
+END;
+$$
+LANGUAGE plpgsql;
 
 -- Obtiene el Empleado que tiene el usuario 'DavidK1412'
 SELECT codigo_empleado FROM Usuario WHERE usuario = 'DavidK1412'
