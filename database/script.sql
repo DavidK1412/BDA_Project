@@ -61,7 +61,7 @@ CREATE TABLE Cliente
     cedula      VARCHAR(12) PRIMARY KEY,
     nombre      VARCHAR(50) NOT NULL,
     id_ciudad   VARCHAR(36) NOT NULL,
-    id_sucursal VARCHAR(36) NOT NULL,
+    id_sucursal VARCHAR(36),
     FOREIGN KEY (id_ciudad) REFERENCES Ciudad (id) ON DELETE CASCADE,
     FOREIGN KEY (id_sucursal) REFERENCES Sucursal (id) ON DELETE CASCADE
 );
@@ -165,10 +165,7 @@ CREATE TRIGGER generar_codigo_empleado
     FOR EACH ROW
     EXECUTE PROCEDURE generar_codigo_empleado();
 
--- Obtiene el Empleado que tiene el usuario 'DavidK1412'
-SELECT codigo_empleado FROM Usuario WHERE usuario = 'DavidK1412'
-SELECT * FROM Empleado WHERE codigo = (SELECT codigo_empleado FROM Usuario WHERE usuario = 'DavidK1412');
-
+--Muestra el empleado y el usuario
 CREATE VIEW Empleados_Username AS
     SELECT
         u.usuario AS usuario,
@@ -192,20 +189,11 @@ SELECT * FROM Empleados_Username;
 
 --Clientes nuevos asignados a la sucursal de su primera compra
 
-CREATE OR REPLACE FUNCTION asignar_sucursal_cliente_nuevo()
-RETURNS TRIGGER AS $$
-DECLARE
-    sucursal_compra VARCHAR(36);
+CREATE OR REPLACE FUNCTION asignar_sucursal_cliente_nuevo() RETURNS TRIGGER AS $$
 BEGIN
-    IF NOT EXISTS (SELECT 1 FROM Cliente WHERE cedula = NEW.id_cliente) THEN
-        -- Obtener la sucursal de la compra
-        SELECT id_sucursal INTO sucursal_compra FROM Compra WHERE id = NEW.id;
-	
-	-- Insertar el nuevo cliente con la sucursal de la compra
-        INSERT INTO Cliente(cedula, nombre, id_ciudad, id_sucursal)
-        VALUES (NEW.id_cliente, 'Nombre Cliente', 1, sucursal_compra);
+    IF NEW.id_cliente IS NOT NULL AND (SELECT id_sucursal FROM Cliente WHERE cedula = NEW.id_cliente) IS NULL THEN
+        UPDATE Cliente SET id_sucursal = (SELECT id_sucursal FROM Empleado WHERE codigo = NEW.id_empleado) WHERE cedula = NEW.id_cliente;
     END IF;
-
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
