@@ -1,6 +1,5 @@
 const authMiddleware = require('../middleware/auth');
-
-// Hola :)
+const jwtMiddleware = require('../middleware/jwt');
 
 const logIn = async (req, res) => {
     const { username, password } = req.body;
@@ -11,4 +10,16 @@ const logIn = async (req, res) => {
     return res.status(401).json({"message": "Invalid username or password"});
 };
 
-module.exports = { logIn };
+const verifyToken = async (req, res) => {
+    const { token } = req.body;
+    const decodedToken = await jwtMiddleware.verifyToken(token);
+    if (decodedToken) {
+        return res.status(200).json(decodedToken);
+    }
+    return res.status(401).json({"message": "Invalid token"});
+};
+
+module.exports = { 
+    logIn,
+    verifyToken
+};

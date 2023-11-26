@@ -103,6 +103,7 @@ CREATE TABLE AutoMotor
     id          VARCHAR(36) PRIMARY KEY,
     modelo      VARCHAR(4),
     chasis      VARCHAR(20) NOT NULL,
+    valor      REAL        NOT NULL,
     id_marca    VARCHAR(36) NOT NULL,
     id_color    VARCHAR(36) NOT NULL,
     id_linea    VARCHAR(36) NOT NULL,
@@ -114,6 +115,9 @@ CREATE TABLE AutoMotor
     FOREIGN KEY (id_tipo) REFERENCES Tipo (id) ON DELETE CASCADE,
     FOREIGN KEY (id_sucursal) REFERENCES Sucursal (id) ON DELETE CASCADE
 );
+
+-- SELECT * FROM AutoMotor; -- id = askasopda , modelo = 2019, chasis = 123456789, id_marca = 1, id_color = 1, id_linea = 1, id_tipo = 1, id_sucursal = 1
+-- id = askasopda , modelo = 2019, chasis = 123456789, marca = "Chevrolet" , color = "Rojo" , linea = "Spark" , tipo = "Sedan" , sucursal = "Bogota", Usado: true
 
 CREATE TABLE Usados(
     id_auto VARCHAR(36),
@@ -148,12 +152,18 @@ $$
 DECLARE
     codigo VARCHAR(15);
 BEGIN
-    codigo := 'CC' || SUBSTRING(NEW.cedula, 1, 2) || SUBSTRING(NEW.nombre, 1, 1) || SUBSTRING(NEW.nombre, 2, 1);
+    codigo := NEW.cedula || SUBSTRING(NEW.nombre, 1, 1) || SUBSTRING(NEW.nombre, 2, 1);
     NEW.codigo := codigo;
     RETURN NEW;
 END;
 $$
 LANGUAGE plpgsql;
+
+CREATE TRIGGER generar_codigo_empleado
+    BEFORE INSERT
+    ON Empleado
+    FOR EACH ROW
+    EXECUTE PROCEDURE generar_codigo_empleado();
 
 -- Obtiene el Empleado que tiene el usuario 'DavidK1412'
 SELECT codigo_empleado FROM Usuario WHERE usuario = 'DavidK1412'

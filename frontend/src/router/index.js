@@ -3,6 +3,7 @@ import App from '../App.vue';
 import LogIn from "../components/LogIn.vue";
 import AdminView from "../views/AdminView.vue";
 import EmployeeView from "../views/EmployeeView.vue";
+import axios from "axios";
 
 const routes = [
     {
@@ -13,7 +14,8 @@ const routes = [
     {
         path: '/login',
         name: 'LogIn',
-        component: LogIn
+        component: LogIn,
+        meta: { requiresAuth: false }
     },
     {
         path: "/admin",
@@ -35,14 +37,24 @@ const router = createRouter({
 });
 
 async function ceckAuth(){
-    const token = localStorage.getItem('token');
+    let token = localStorage.getItem('token');
     if(!token) return false;
-    return true;
+
+    try{
+       const result = await axios.post('http://localhost:3000/auth/verify', {"token": token});
+       if (result.status === 200 || result.data) {
+           return true;
+       }
+    } catch (e) {
+        console.log(e);
+        return false;
+    }
 }
 
 router.beforeEach(async (to, from, next) => {
     if (to.matched.some(record => record.meta.requiresAuth)) {
-        if(!await ceckAuth()){
+        const auth = await ceckAuth();
+        if(!auth){
             next({
                 path: '/login',
                 query: { redirect: to.fullPath }

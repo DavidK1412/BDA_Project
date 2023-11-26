@@ -7,30 +7,45 @@
 </template>
 
 <script>
+  import jwtDecode from "jwt-decode";
   export default {
     name: 'App',
     computed: {
       isAuthenticated: {
-        get: function(){
-          return this.$route.meta.requiresAuth;
+        get: function (){
+          if (localStorage.getItem('token')) {
+            return true;
+          } else {
+            return false;
+          }
         },
-        set: function(){}
+        set: function (){}
       }
     },
     methods: {
       logOut: function() {
-        console.log('TODO: logOut');
+        localStorage.removeItem('token');
+        this.isAuthenticated = false;
+        this.$router.push({name: 'LogIn'});
       },
       loadEmployeeView: function() {
-        console.log('TODO: loadEmployeeView');
+        this.isAuthenticated = true;
+        this.$router.push({name: 'EmployeeView'});
       },
       loadAdminView: function() {
-        console.log('TODO: loadAdminView');
+        this.isAuthenticated = true;
+        this.$router.push({name: 'AdminView'});
       }
     },
     created: function() {
       if (this.isAuthenticated) {
-        console.log('TODO: Load views based in token data')
+        const token = localStorage.getItem('token');
+        const tokenData = jwtDecode(token);
+        if (tokenData.role === 1) {
+          this.$router.push({name: 'AdminView'});
+        } else {
+          this.$router.push({name: 'EmployeeView'});
+        }
       } else {
         this.$router.push({name: 'LogIn'});
       }

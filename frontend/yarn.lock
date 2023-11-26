@@ -397,6 +397,11 @@ magic-string@^0.30.5:
   dependencies:
     "@jridgewell/sourcemap-codec" "^1.4.15"
 
+mdb-vue-ui-kit@^4.1.1:
+  version "4.1.1"
+  resolved "https://registry.yarnpkg.com/mdb-vue-ui-kit/-/mdb-vue-ui-kit-4.1.1.tgz#6a6d6c80b1747ae8d21eb4f5cd15f5dd7f01317c"
+  integrity sha512-EeZ9Wefj4tWT9hiIF+SF6/epHqV6uC02IHN68DJP7x+mDXA/KZ063eGhocYJZ/O7RlMDt4pgt4oqsYuNDS6CTQ==
+
 mime-db@1.52.0:
   version "1.52.0"
   resolved "https://registry.yarnpkg.com/mime-db/-/mime-db-1.52.0.tgz#bbabcdc02859f4987301c856e3387ce5ec43bf70"
