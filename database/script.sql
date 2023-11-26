@@ -187,3 +187,168 @@ CREATE VIEW Empleados_Username AS
         u.codigo_empleado = e.codigo;
 
 SELECT * FROM Empleados_Username;
+
+
+
+--Clientes nuevos asignados a la sucursal de su primera compra
+
+CREATE OR REPLACE FUNCTION asignar_sucursal_cliente_nuevo()
+RETURNS TRIGGER AS $$
+DECLARE
+    sucursal_compra VARCHAR(36);
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM Cliente WHERE cedula = NEW.id_cliente) THEN
+        -- Obtener la sucursal de la compra
+        SELECT id_sucursal INTO sucursal_compra FROM Compra WHERE id = NEW.id;
+	
+	-- Insertar el nuevo cliente con la sucursal de la compra
+        INSERT INTO Cliente(cedula, nombre, id_ciudad, id_sucursal)
+        VALUES (NEW.id_cliente, 'Nombre Cliente', 1, sucursal_compra);
+    END IF;
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trigger_asignar_sucursal_cliente_nuevo
+AFTER INSERT ON Compra
+FOR EACH ROW
+EXECUTE FUNCTION asignar_sucursal_cliente_nuevo();
+
+--Consolidado mensual de la cantidad de clientes nuevos a nivel nacional
+
+SELECT
+    EXTRACT(YEAR FROM c.fecha) AS anio,
+    EXTRACT(MONTH FROM c.fecha) AS mes,
+    COUNT(DISTINCT c.id_cliente) AS cantidad_clientes_nuevos
+FROM Compra c
+JOIN Cliente cl ON c.id_cliente = cl.cedula
+WHERE cl.cedula NOT IN (
+    SELECT cl2.cedula
+    FROM Cliente cl2
+    JOIN Compra c2 ON cl2.cedula = c2.id_cliente
+    WHERE EXTRACT(MONTH FROM c2.fecha) < EXTRACT(MONTH FROM c.fecha)
+        AND EXTRACT(YEAR FROM c2.fecha) = EXTRACT(YEAR FROM c.fecha)
+)
+GROUP BY anio, mes
+ORDER BY anio, mes;
+
+--Consolidado mensual y anual de la marca de la cual se han vendido más automotores en cada sucursal, permitiendo clasificarlos en nuevos o usados.
+
+SELECT
+    s.nombre AS Sucursal,
+    EXTRACT(YEAR FROM c.fecha) AS Anio,
+    EXTRACT(MONTH FROM c.fecha) AS Mes,
+    CASE
+        WHEN u.id_auto IS NOT NULL THEN 'Usado'
+        ELSE 'Nuevo'
+    END AS Estado,
+    a.id_marca AS Marca,
+    COUNT(*) AS CantidadVentas
+FROM Compra c
+INNER JOIN AutoMotor a ON c.id_auto = a.id
+LEFT JOIN Usados u ON a.id = u.id_auto
+JOIN Sucursal s ON a.id_sucursal = s.id  
+WHERE c.fecha IS NOT NULL
+GROUP BY Sucursal, Anio, Mes, Estado, Marca
+ORDER BY Sucursal, Anio, Mes, Estado, CantidadVentas DESC
+LIMIT 1;
+
+--Datos de los clientes nuevos. Estos datos organizados por sucursal en un mes particular.
+
+SELECT
+    cl.id_sucursal,
+    EXTRACT(MONTH FROM co.fecha) AS mes,
+    co.id_cliente,
+    cl.nombre AS nombre_cliente,
+    cl.id_ciudad,
+    cl.id_sucursal AS sucursal_cliente
+FROM Compra co
+JOIN Cliente cl ON co.id_cliente = cl.cedula
+WHERE NOT EXISTS (
+    SELECT 1
+    FROM Compra co2
+    WHERE co2.id_cliente = co.id_cliente
+      AND EXTRACT(MONTH FROM co2.fecha) < EXTRACT(MONTH FROM co.fecha)
+      AND EXTRACT(YEAR FROM co2.fecha) = EXTRACT(YEAR FROM co.fecha)
+)
+ORDER BY cl.id_sucursal, EXTRACT(MONTH FROM co.fecha), co.id_cliente;
+
+
+--Marca de carros nuevos más comprados en un mes particular a nivel nacional por cada sucursal.
+
+SELECT
+    a.id_sucursal,
+    EXTRACT(MONTH FROM c.fecha) AS mes,
+    FIRST_VALUE(t.nombre) OVER (PARTITION BY a.id_sucursal, EXTRACT(MONTH FROM c.fecha) ORDER BY COUNT(*) DESC) AS marca_mas_comprada,
+    MAX(COUNT(*)) OVER (PARTITION BY a.id_sucursal, EXTRACT(MONTH FROM c.fecha)) AS cantidad_maxima_ventas
+FROM Compra c
+JOIN AutoMotor a ON c.id_auto = a.id
+JOIN Nuevos n ON a.id = n.id_auto
+JOIN Tipo t ON a.id_tipo = t.id
+WHERE EXTRACT(MONTH FROM c.fecha) = 1 -- Reemplaza con el mes particular que desees
+AND EXTRACT(YEAR FROM c.fecha) = 2022 -- Reemplaza con el año particular que desees
+GROUP BY a.id_sucursal, EXTRACT(MONTH FROM c.fecha), t.nombre
+ORDER BY a.id_sucursal, mes;
+
+--Datos de los empleados a nivel nacional organizados por sucursal y por cargo de tal forma que sea posible identificar el empleado con mayor y menor antigüedad.
+
+SELECT
+    id_sucursal,
+    nombre_cargo,
+    MAX(nombre_empleado) AS empleado_mayor_antiguedad,
+    MAX(fecha_ingreso) AS fecha_ingreso_mayor_antiguedad,
+    MIN(nombre_empleado) AS empleado_menor_antiguedad,
+    MIN(fecha_ingreso) AS fecha_ingreso_menor_antiguedad
+FROM (
+    SELECT
+        e.id_sucursal,
+        c.nombre AS nombre_cargo,
+        e.nombre AS nombre_empleado,
+        e.fecha_ingreso,
+        RANK() OVER (PARTITION BY e.id_sucursal, e.id_cargo ORDER BY e.fecha_ingreso ASC) AS ranking_asc,
+        RANK() OVER (PARTITION BY e.id_sucursal, e.id_cargo ORDER BY e.fecha_ingreso DESC) AS ranking_desc
+    FROM Empleado e
+    JOIN Cargo c ON e.id_cargo = c.id
+) AS subquery
+WHERE 1 IN (ranking_asc, ranking_desc)
+GROUP BY id_sucursal, nombre_cargo
+ORDER BY id_sucursal, nombre_cargo, fecha_ingreso_menor_antiguedad DESC, fecha_ingreso_mayor_antiguedad DESC;
+
+
+-- id = askasopda , modelo = 2019, chasis = 123456789, marca = "Chevrolet" , color = "Rojo" , linea = "Spark" , tipo = "Sedan" , sucursal = "Bogota", Usado: true
+
+CREATE VIEW VistaAutomovilesMasVendidos AS
+SELECT
+    a.id AS ID,
+    a.modelo AS Modelo,
+    a.chasis AS Chasis,
+    m.nombre AS Marca,
+    c.nombre AS Color,
+    l.nombre AS Linea,
+    ti.nombre AS Tipo,
+    s.nombre AS Sucursal,
+    CASE
+        WHEN u.id_auto IS NOT NULL THEN 'Usado'
+        ELSE 'Nuevo'
+    END AS Estado
+FROM AutoMotor a
+JOIN Marca m ON a.id_marca = m.id
+JOIN Color c ON a.id_color = c.id
+JOIN Linea l ON a.id_linea = l.id
+JOIN Tipo ti ON a.id_tipo = ti.id
+JOIN Sucursal s ON a.id_sucursal = s.id
+LEFT JOIN Usados u ON a.id = u.id_auto
+WHERE (a.id, a.id_sucursal, a.id_marca, a.id_tipo) IN (
+    SELECT DISTINCT ON (a.id_sucursal, m.id, a.id_tipo)
+        a.id,
+        a.id_sucursal,
+        m.id,
+        a.id_tipo
+    FROM Compra c
+    JOIN AutoMotor a ON c.id_auto = a.id
+    JOIN Marca m ON a.id_marca = m.id
+    GROUP BY a.id_sucursal, m.id, a.id_tipo, a.id
+    ORDER BY a.id_sucursal, m.id, a.id_tipo, COUNT(*) DESC
+)
+ORDER BY Sucursal, Marca;
