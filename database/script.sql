@@ -8,6 +8,7 @@ CREATE TABLE Ciudad
     nombre VARCHAR(50) NOT NULL
 );
 
+
 CREATE TABLE Sucursal
 (
     id     VARCHAR(36) PRIMARY KEY,
@@ -21,9 +22,6 @@ CREATE TABLE Cargo
     id     INT PRIMARY KEY,
     nombre VARCHAR(50) NOT NULL
 );
-
--- "CC + Iniciales nombre y apellido" - Ej- CC: 1015993008 David Casallas "1015993008DC"
--- TRIGGER: Codigo = CC + Iniciales nombre y apellido
 
 CREATE TABLE Empleado
 (
@@ -318,7 +316,7 @@ ORDER BY id_sucursal, nombre_cargo, fecha_ingreso_menor_antiguedad DESC, fecha_i
 
 -- id = askasopda , modelo = 2019, chasis = 123456789, marca = "Chevrolet" , color = "Rojo" , linea = "Spark" , tipo = "Sedan" , sucursal = "Bogota", Usado: true
 
-CREATE VIEW VistaAutomovilesMasVendidos AS
+CREATE VIEW VistaAutomoviles AS
 SELECT
     a.id AS ID,
     a.modelo AS Modelo,

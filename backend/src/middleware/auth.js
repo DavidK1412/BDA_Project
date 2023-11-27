@@ -1,4 +1,4 @@
-// TODO: add bcrpt implementation, static salt
+const bcrypt = require('bcrypt');
 const jwt = require('./jwt');
 const userService = require('../services/user.service');
 const employeeService = require('../services/employee.service');
@@ -10,7 +10,7 @@ const login = async(username, password) => {
     if (!user || !employee) {
         return false;
     }
-    if (user?.contrasena === password){
+    if (await bcrypt.compare(password, user.contrasena)){
         const token = jwt.generateToken({
             id: user.id,
             role: employee.id_cargo
@@ -20,4 +20,28 @@ const login = async(username, password) => {
     return false;
 }
 
-module.exports = {login};
+const create = async(userId, username, employeeCode, password) => {
+    const cryptedPassword = await bcrypt.hash(password, 10, (err, hash) => { 
+        if (err) {
+            return false;
+        }
+        userService.createUser(userId, username, hash, employeeCode);
+    });
+    return true;
+}
+
+const changePassword = async(username, password) => {
+    const user = await userService.getUserByUsername(username);
+    if (!user) {
+        return false;
+    }
+    const cryptedPassword = await bcrypt.hash(password, 10, (err, hash) => { 
+        if (err) {
+            return false;
+        }
+        userService.changePassword(username, hash);
+    });
+    return true;
+}
+
+module.exports = {login, create, changePassword};
