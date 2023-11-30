@@ -2,11 +2,25 @@ const pgClient = require("../config/db.config");
 const cityService = require("./city.service");
 const branchService = require("./branch.service");
 
+const getClientsByBranch = async (id) => {
+    const response = await pgClient.query(
+        "SELECT * FROM cliente WHERE id_sucursal = $1", [id]
+    )
+    return response.rows;
+}
+
 const getCellphoneById = async (id) => {
     const response = await pgClient.query(
         "SELECT * FROM telefono_cliente WHERE cedula_cliente = $1", [id]
     )
     return response.rows;
+}
+
+const createCellphone = async (id, cellphone) => {
+    const response = await pgClient.query(
+        "INSERT INTO telefono_cliente (cedula_cliente, numero) VALUES ($1, $2)", [id, cellphone]
+    )
+    return response;
 }
 
 const deleteCellphone = async (id, cellphone) => {
@@ -40,8 +54,16 @@ const getClientById = async (id) => {
 const createClient = async (client) => {
     const { cedula, nombre, id_ciudad, id_sucursal } = client;
     const response = await pgClient.query(
-        "INSERT INTO cliente (cedula, nombre, id_ciudad, id_sucursal) VALUES ($1, $2, $3, $4)", [cedula, nombre, id_ciudad, id_sucursal]
+        "INSERT INTO cliente (cedula, nombre, id_ciudad) VALUES ($1, $2, $3)", [cedula, nombre, id_ciudad]
     )
+    const { telefonos } = client;
+    if (telefonos.length > 0 && response.rowCount > 0) {
+        telefonos.forEach(async (telefono) => {
+            await pgClient.query(
+                "INSERT INTO telefono_cliente (cedula_cliente, numero) VALUES ($1, $2)", [cedula, telefono]
+            )
+        });
+    }
     return response;
 }
 
@@ -67,5 +89,7 @@ module.exports = {
     createClient,
     updateClient,
     deleteClient,
-    deleteCellphone
+    deleteCellphone,
+    createCellphone,
+    getClientsByBranch
 };

@@ -1,4 +1,26 @@
 const pgClient = require("../config/db.config");
+const branchService = require("./branch.service");
+
+const getCellphoneById = async (id) => {
+    const response = await pgClient.query(
+        "SELECT * FROM telefono_empleado WHERE codigo_empleado = $1", [id]
+    )
+    return response.rows;
+}
+
+const createCellphone = async (id, cellphone) => {
+    const response = await pgClient.query(
+        "INSERT INTO telefono_empleado (codigo_empleado, numero) VALUES ($1, $2)", [id, cellphone]
+    )
+    return response;
+}
+
+const deleteCellphone = async (id, cellphone) => {
+    const response = await pgClient.query(
+        "DELETE FROM telefono_empleado WHERE codigo_empleado = $1 AND numero = $2", [id, cellphone]
+    )
+    return response;
+}
 
 const getAllEmployees = async () => {
     const response = await pgClient.query("SELECT * FROM Empleado");
@@ -6,7 +28,13 @@ const getAllEmployees = async () => {
 };
 
 const getEmployeeById = async (id) => {
-    const response = await pgClient.query("SELECT * FROM Empleado WHERE codigo = $1", [id]);    return response.rows[0];
+    const response = await pgClient.query("SELECT * FROM Empleado WHERE codigo = $1", [id]);
+    const employee = response.rows[0];
+    const branch = await branchService.getBranchById(employee.id_sucursal);
+    const cellphone = await getCellphoneById(id);
+    employee.sucursal = branch[0];
+    employee.telefonos = cellphone;
+    return employee;
 }
 
 const getEmployeeByUsername = async (username) => {
@@ -21,6 +49,17 @@ const createEmployee = async (employee) => {
         "INSERT INTO Empleado(cedula, nombre, salario, fecha_nacimiento, fecha_ingreso, id_cargo, id_sucursal) VALUES($1, $2, $3, $4, $5, $6, $7)",
         [employee.cedula, employee.nombre, employee.salario, employee.fecha_nacimiento, employee.fecha_ingreso, employee.id_cargo, employee.id_sucursal]
     );
+    
+    const codigo = employee.cedula + employee.nombre.substring(0, 2);
+
+    const { telefonos } = employee;
+    if (telefonos.length > 0 && response.rowCount > 0) {
+        telefonos.forEach(async (telefono) => {
+            await pgClient.query(
+                "INSERT INTO telefono_empleado (codigo_empleado, numero) VALUES ($1, $2)", [codigo, telefono]
+            )
+        });
+    }
     return response;
 }
 
@@ -46,5 +85,8 @@ module.exports = {
     getEmployeeByUsername,
     createEmployee,
     updateEmployee,
-    deleteEmployee
+    deleteEmployee,
+    getCellphoneById,
+    createCellphone,
+    deleteCellphone
 };

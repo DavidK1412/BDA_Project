@@ -4,144 +4,184 @@ CREATE DATABASE BuenAutoDB;
 
 CREATE TABLE Ciudad
 (
-    id     VARCHAR(36) PRIMARY KEY,
+    id     VARCHAR(36) NOT NULL UNIQUE,
     nombre VARCHAR(50) NOT NULL
 );
 
+ALTER TABLE Ciudad ADD PRIMARY KEY (id);
 
 CREATE TABLE Sucursal
 (
-    id     VARCHAR(36) PRIMARY KEY,
+    id     VARCHAR(36) NOT NULL UNIQUE,
     nombre VARCHAR(50) NOT NULL,
-    ciudad VARCHAR(36) NOT NULL,
-    FOREIGN KEY (ciudad) REFERENCES Ciudad (id) ON DELETE CASCADE
+    ciudad VARCHAR(36) NOT NULL
+    
 );
+
+ALTER TABLE Sucursal ADD PRIMARY KEY (id);
+
+ALTER TABLE Sucursal ADD CONSTRAINT fk_Ciudad FOREIGN KEY (ciudad) REFERENCES Ciudad (id);
 
 CREATE TABLE Cargo
 (
-    id     INT PRIMARY KEY,
+    id     INT,
     nombre VARCHAR(50) NOT NULL
 );
 
+ALTER TABLE Cargo ADD PRIMARY KEY (id);
+
+
 CREATE TABLE Empleado
 (
-    codigo           VARCHAR(15) PRIMARY KEY,
+    codigo           VARCHAR(15) NOT NULL UNIQUE,
     cedula           VARCHAR(12) NOT NULL,
     nombre           VARCHAR(50) NOT NULL,
     salario          REAL        NOT NULL,
     fecha_nacimiento DATE        NOT NULL,
     fecha_ingreso    DATE        NOT NULL,
     id_cargo         INT         NOT NULL,
-    id_sucursal      VARCHAR(36) NOT NULL,
-    FOREIGN KEY (id_cargo) REFERENCES Cargo (id) ON DELETE CASCADE,
-    FOREIGN KEY (id_sucursal) REFERENCES Sucursal (id) ON DELETE CASCADE
+    id_sucursal      VARCHAR(36) NOT NULL
+
 );
+
+ALTER TABLE Empleado ADD PRIMARY KEY (codigo);
+
+ALTER TABLE Empleado ADD CONSTRAINT fk_Cargo FOREIGN KEY (id_cargo) REFERENCES Cargo (id) ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE Empleado ADD CONSTRAINT fk_Sucursal FOREIGN KEY (id_sucursal) REFERENCES Sucursal (id) ON DELETE CASCADE ON UPDATE CASCADE;   
 
 CREATE TABLE Telefono_Empleado
 (
     numero          VARCHAR(15) NOT NULL,
-    codigo_empleado VARCHAR(15) NOT NULL,
-    PRIMARY KEY (numero, codigo_empleado),
-    FOREIGN KEY (codigo_empleado) REFERENCES Empleado (codigo) ON DELETE CASCADE
+    codigo_empleado VARCHAR(15) NOT NULL
+    
 );
+
+ALTER TABLE Telefono_Empleado ADD PRIMARY KEY (numero,codigo_empleado);
+
+ALTER TABLE Telefono_Empleado ADD CONSTRAINT fk_empleado FOREIGN KEY (codigo_empleado) REFERENCES Empleado (codigo) ON DELETE CASCADE ON UPDATE CASCADE;
 
 CREATE TABLE Usuario
 (
-    id              VARCHAR(36) PRIMARY KEY,
+    id              VARCHAR(36)  NOT NULL UNIQUE,
     codigo_empleado VARCHAR(15)  NOT NULL,
     usuario         VARCHAR(50)  NOT NULL,
-    contrasena      VARCHAR(256) NOT NULL,
-    FOREIGN KEY (codigo_empleado) REFERENCES Empleado (codigo) ON DELETE CASCADE
+    contrasena      VARCHAR(256) NOT NULL
 );
+
+ALTER TABLE Usuario ADD PRIMARY KEY (id);
+
+ALTER TABLE Usuario ADD CONSTRAINT fk_empleado FOREIGN KEY (codigo_empleado) REFERENCES Empleado (codigo) ON DELETE CASCADE ON UPDATE CASCADE; 
 
 CREATE TABLE Cliente
 (
-    cedula      VARCHAR(12) PRIMARY KEY,
+    cedula      VARCHAR(12) NOT NULL UNIQUE,
     nombre      VARCHAR(50) NOT NULL,
     id_ciudad   VARCHAR(36) NOT NULL,
-    id_sucursal VARCHAR(36),
-    FOREIGN KEY (id_ciudad) REFERENCES Ciudad (id) ON DELETE CASCADE,
-    FOREIGN KEY (id_sucursal) REFERENCES Sucursal (id) ON DELETE CASCADE
+    id_sucursal VARCHAR(36)
 );
+
+ALTER TABLE Cliente ADD PRIMARY KEY (cedula);
+
+ALTER TABLE Cliente ADD CONSTRAINT fk_ciudad FOREIGN KEY (id_ciudad) REFERENCES Ciudad (id) ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE Cliente ADD CONSTRAINT fk_sucursal FOREIGN KEY (id_sucursal) REFERENCES Sucursal (id) ON DELETE SET NULL ON UPDATE CASCADE; 
 
 CREATE TABLE Telefono_Cliente
 (
     numero         VARCHAR(15) NOT NULL,
-    cedula_cliente VARCHAR(12) NOT NULL,
-    PRIMARY KEY (numero, cedula_cliente),
-    FOREIGN KEY (cedula_cliente) REFERENCES Cliente (cedula) ON DELETE CASCADE
+    cedula_cliente VARCHAR(12) NOT NULL
 );
+
+ALTER TABLE Telefono_Cliente ADD PRIMARY KEY (numero, cedula_cliente);
+
+ALTER TABLE Telefono_Cliente ADD CONSTRAINT fk_cliente FOREIGN KEY (cedula_cliente) REFERENCES Cliente (cedula) ON DELETE CASCADE ON UPDATE CASCADE; 
 
 CREATE TABLE Linea
 (
-    id     VARCHAR(36) PRIMARY KEY,
+    id     VARCHAR(36) NOT NULL,
     nombre VARCHAR(50) NOT NULL
 );
+
+ALTER TABLE Linea ADD PRIMARY KEY (id);
 
 CREATE TABLE Color
 (
-    id     VARCHAR(36) PRIMARY KEY,
+    id     VARCHAR(36) NOT NULL,
     nombre VARCHAR(50) NOT NULL
 );
+
+ALTER TABLE Color ADD PRIMARY KEY (id);
 
 CREATE TABLE Tipo
 (
-    id     INT PRIMARY KEY,
+    id     INT 	       NOT NULL,
     nombre VARCHAR(50) NOT NULL
 );
+
+ALTER TABLE Tipo ADD PRIMARY KEY (id);
 
 CREATE TABLE Marca
 (
-    id     VARCHAR(36) PRIMARY KEY,
-    nombre VARCHAR(50) NOT NULL
+	id     INT         NOT NULL UNIQUE,
+	nombre VARCHAR(50) NOT NULL
 );
+
+ALTER TABLE Marca ADD PRIMARY KEY (id);
 
 CREATE TABLE AutoMotor
 (
-    id          VARCHAR(36) PRIMARY KEY,
-    modelo      VARCHAR(4),
+    id          VARCHAR(36) NOT NULL UNIQUE,
+    modelo      VARCHAR(4)  NOT NULL,
     chasis      VARCHAR(20) NOT NULL,
-    valor      REAL        NOT NULL,
-    id_marca    VARCHAR(36) NOT NULL,
+    valor       REAL        NOT NULL,
     id_color    VARCHAR(36) NOT NULL,
     id_linea    VARCHAR(36) NOT NULL,
     id_tipo     INT         NOT NULL,
     id_sucursal VARCHAR(36) NOT NULL,
-    FOREIGN KEY (id_marca) REFERENCES Marca (id) ON DELETE CASCADE,
-    FOREIGN KEY (id_color) REFERENCES Color (id) ON DELETE CASCADE,
-    FOREIGN KEY (id_linea) REFERENCES Linea (id) ON DELETE CASCADE,
-    FOREIGN KEY (id_tipo) REFERENCES Tipo (id) ON DELETE CASCADE,
-    FOREIGN KEY (id_sucursal) REFERENCES Sucursal (id) ON DELETE CASCADE
+    id_marca    INT         NOT NULL
 );
 
--- SELECT * FROM AutoMotor; -- id = askasopda , modelo = 2019, chasis = 123456789, id_marca = 1, id_color = 1, id_linea = 1, id_tipo = 1, id_sucursal = 1
--- id = askasopda , modelo = 2019, chasis = 123456789, marca = "Chevrolet" , color = "Rojo" , linea = "Spark" , tipo = "Sedan" , sucursal = "Bogota", Usado: true
+ALTER TABLE AutoMotor ADD PRIMARY KEY (id);
+
+ALTER TABLE AutoMotor ADD CONSTRAINT fk_color FOREIGN KEY (id_color) REFERENCES Color (id) ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE AutoMotor ADD CONSTRAINT fk_linea FOREIGN KEY (id_linea) REFERENCES Linea (id) ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE AutoMotor ADD CONSTRAINT fk_tipo FOREIGN KEY (id_tipo) REFERENCES Tipo (id) ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE AutoMotor ADD CONSTRAINT fk_sucursal FOREIGN KEY (id_sucursal) REFERENCES Sucursal (id) ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE AutoMotor ADD CONSTRAINT fk_marca FOREIGN KEY (id_marca) REFERENCES Marca (id) ON DELETE SET NULL ON UPDATE CASCADE;
+
 
 CREATE TABLE Usados(
-    id_auto VARCHAR(36),
-    placa   VARCHAR(6) NOT NULL,
-    FOREIGN KEY (id_auto) REFERENCES AutoMotor (id) ON DELETE CASCADE,
-    PRIMARY KEY (id_auto, placa)
+    id_auto VARCHAR(36)NOT NULL,
+    placa   VARCHAR(6) NOT NULL UNIQUE
+
 );
 
+ALTER TABLE Usados ADD PRIMARY KEY (id_auto,placa);
+
+ALTER TABLE Usados ADD CONSTRAINT fk_auto FOREIGN KEY (id_auto) REFERENCES AutoMotor (id) ON DELETE SET NULL ON UPDATE CASCADE;
 
 CREATE TABLE Nuevos(
-    id_auto    VARCHAR(36),
-    id_interno VARCHAR(10) NOT NULL,
-    FOREIGN KEY (id_auto) REFERENCES AutoMotor (id) ON DELETE CASCADE,
-    PRIMARY KEY (id_auto, id_interno)
+    id_auto    VARCHAR(36) NOT NULL,
+    id_interno VARCHAR(10) NOT NULL
 );
 
+ALTER TABLE Nuevos ADD PRIMARY KEY (id_auto, id_interno);
+
+ALTER TABLE Nuevos ADD CONSTRAINT fk_auto FOREIGN KEY (id_auto) REFERENCES AutoMotor (id) ON DELETE SET NULL ON UPDATE CASCADE;
+
+	
 CREATE TABLE Compra(
-    id          VARCHAR(36) PRIMARY KEY,
+    id          VARCHAR(36) NOT NULL UNIQUE,
     fecha       DATE        NOT NULL,
     id_cliente  VARCHAR(12) NOT NULL,
-    id_auto     VARCHAR(36) NOT NULL UNIQUE,
-    id_empleado VARCHAR(15) NOT NULL,
-    FOREIGN KEY (id_cliente) REFERENCES Cliente (cedula) ON DELETE CASCADE,
-    FOREIGN KEY (id_auto) REFERENCES AutoMotor (id) ON DELETE CASCADE,
-    FOREIGN KEY (id_empleado) REFERENCES Empleado (codigo) ON DELETE CASCADE
+    id_auto     VARCHAR(36) NOT NULL,
+    id_empleado VARCHAR(15) NOT NULL
 );
+
+ALTER TABLE Compra ADD PRIMARY KEY (id);
+
+ALTER TABLE Compra ADD CONSTRAINT fk_cliente FOREIGN KEY (id_cliente) REFERENCES Cliente (cedula) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE Compra ADD CONSTRAINT fk_auto FOREIGN KEY (id_auto) REFERENCES AutoMotor (id) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE Compra ADD CONSTRAINT fk_empleado FOREIGN KEY (id_empleado) REFERENCES Empleado (codigo) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --- Trigger para generar el codigo del empleado
 CREATE OR REPLACE FUNCTION generar_codigo_empleado()
@@ -302,39 +342,84 @@ GROUP BY id_sucursal, nombre_cargo
 ORDER BY id_sucursal, nombre_cargo, fecha_ingreso_menor_antiguedad DESC, fecha_ingreso_mayor_antiguedad DESC;
 
 
--- id = askasopda , modelo = 2019, chasis = 123456789, marca = "Chevrolet" , color = "Rojo" , linea = "Spark" , tipo = "Sedan" , sucursal = "Bogota", Usado: true
+-- VIEW PARA MOSTRAR
+    -- id (Tabla automotor)
+    -- modelo (Tabla automotor)
+    -- chasis (Tabla automotor)
+    -- valor (Tabla automotor)
+    -- color (Tabla color, atributo nombre)
+    -- marca (Tabla marca, atributo nombre)
+    -- linea (Tabla linea, atributo nombre)
+    -- tipo (Tabla tipo, atributo nombre)
+    -- sucursal (Tabla sucursal, atributo nombre)
+    -- estado (Mostrar si es usado o nuevo, dependiendo en que tabla se encuentre)
 
-CREATE VIEW VistaAutomoviles AS
-SELECT
-    a.id AS ID,
-    a.modelo AS Modelo,
-    a.chasis AS Chasis,
-    m.nombre AS Marca,
-    c.nombre AS Color,
-    l.nombre AS Linea,
-    ti.nombre AS Tipo,
-    s.nombre AS Sucursal,
-    CASE
-        WHEN u.id_auto IS NOT NULL THEN 'Usado'
-        ELSE 'Nuevo'
-    END AS Estado
-FROM AutoMotor a
-JOIN Marca m ON a.id_marca = m.id
-JOIN Color c ON a.id_color = c.id
-JOIN Linea l ON a.id_linea = l.id
-JOIN Tipo ti ON a.id_tipo = ti.id
-JOIN Sucursal s ON a.id_sucursal = s.id
-LEFT JOIN Usados u ON a.id = u.id_auto
-WHERE (a.id, a.id_sucursal, a.id_marca, a.id_tipo) IN (
-    SELECT DISTINCT ON (a.id_sucursal, m.id, a.id_tipo)
-        a.id,
-        a.id_sucursal,
-        m.id,
-        a.id_tipo
-    FROM Compra c
-    JOIN AutoMotor a ON c.id_auto = a.id
+CREATE VIEW Automotores AS
+    SELECT
+        a.id AS id,
+        a.modelo AS modelo,
+        a.chasis AS chasis,
+        a.valor AS valor,
+        c.nombre AS color,
+        m.nombre AS marca,
+        l.nombre AS linea,
+        t.nombre AS tipo,
+        s.nombre AS sucursal,
+        CASE
+            WHEN u.id_auto IS NOT NULL THEN 'Usado'
+            ELSE 'Nuevo'
+        END AS estado
+    FROM AutoMotor a
+    JOIN Color c ON a.id_color = c.id
     JOIN Marca m ON a.id_marca = m.id
-    GROUP BY a.id_sucursal, m.id, a.id_tipo, a.id
-    ORDER BY a.id_sucursal, m.id, a.id_tipo, COUNT(*) DESC
-)
-ORDER BY Sucursal, Marca;
+    JOIN Linea l ON a.id_linea = l.id
+    JOIN Tipo t ON a.id_tipo = t.id
+    JOIN Sucursal s ON a.id_sucursal = s.id
+    LEFT JOIN Usados u ON a.id = u.id_auto;
+-- TRIGGER PARA INSERTAR EN LA TABLA NUEVOS
+-- AL INSERTAR EN LA TABLA NUEVOS UN AUTOMOTOR, GENERAR EL ATRIBUTO ID_INTERNO
+-- PARA GENERAR ESTE, TOMARA LOS ULTIMOS 8 DIGITOS DEL CHASIS, LE CONCATENARA EL id_tipo Y EL ULTIMO DIGITO DEL MODELO
+-- EJ: CHASIS = 123456789, id_tipo = 1, modelo = 2019
+-- id_interno = 2345678919
+
+-- Chasis, id_tipo, modelo son los atributos de la tabla AutoMotor
+
+CREATE OR REPLACE FUNCTION generar_id_interno() RETURNS TRIGGER AS $$
+DECLARE
+    automotor RECORD;
+BEGIN
+    SELECT chasis, id_tipo, modelo INTO automotor FROM AutoMotor WHERE id = NEW.id_auto;
+    NEW.id_interno := SUBSTRING(automotor.chasis, LENGTH(automotor.chasis) - 7) || automotor.id_tipo || SUBSTRING(automotor.modelo::text, LENGTH(automotor.modelo::text));
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trigger_generar_id_interno
+BEFORE INSERT ON Nuevos
+FOR EACH ROW
+EXECUTE FUNCTION generar_id_interno();
+
+
+CREATE TRIGGER trigger_generar_id_interno
+BEFORE INSERT ON Nuevos
+FOR EACH ROW
+EXECUTE FUNCTION generar_id_interno();
+
+
+create function asignar_sucursal_cliente_nuevo() returns trigger
+    language plpgsql
+as
+$$
+DECLARE
+    sucursal_compra VARCHAR(36);
+BEGIN
+    IF NEW.id_cliente IS NOT NULL AND (SELECT id_sucursal FROM Cliente WHERE cedula = NEW.id_cliente) IS NULL THEN
+        SELECT id_sucursal INTO sucursal_compra FROM Empleado WHERE codigo = NEW.id_empleado;
+        UPDATE Cliente SET id_sucursal = sucursal_compra WHERE cedula = NEW.id_cliente;
+    END IF;
+
+    RETURN NEW;
+END;
+$$;
+
+alter function asignar_sucursal_cliente_nuevo() owner to postgres;

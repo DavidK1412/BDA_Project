@@ -8,5 +8,7 @@ router.post('/', clientController.createClient);
 router.put('/:id', clientController.updateClient);
 router.delete('/:id', clientController.deleteClient);
 router.delete('/:id/:cellphone', clientController.deleteCellphone);
+router.post('/:id/cellphone', clientController.addCellphone);
+router.get('/branch/:id', clientController.getClientsByBranch);
 
 module.exports = router;

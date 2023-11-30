@@ -49,11 +49,29 @@ const deleteCellphone = async (req, res) => {
     return res.status(200).json({ message: "Teléfono eliminado correctamente" });
 }
 
+const addCellphone = async (req, res) => {
+    const id = req.params.id;
+    const cellphone = req.body.telefono;
+    const response = await clientService.createCellphone(id, cellphone);
+    if (response.rowCount == 0) {
+        return res.status(400).json({ message: "El cliente no existe" });
+    }
+    return res.status(200).json({ message: "Teléfono agregado correctamente" });
+}
+
+const getClientsByBranch = async (req, res) => {
+    const id = req.params.id;
+    const clients = await clientService.getClientsByBranch(id);
+    return res.status(200).json(clients);
+}
+
 module.exports = {
     getAllClients,
     getClientById,
     createClient,
     updateClient,
     deleteClient,
-    deleteCellphone
+    deleteCellphone,
+    addCellphone,
+    getClientsByBranch
 };

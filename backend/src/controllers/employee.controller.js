@@ -30,10 +30,26 @@ const deleteEmployee = async (req, res) => {
     return res.status(200).json(response);
 }
 
+const deleteCellphone = async (req, res) => {
+    const id = req.params.id;
+    const cellphone = req.params.cellphone;
+    const response = await employeeService.deleteCellphone(id, cellphone);
+    return res.status(200).json(response);
+}
+
+const addCellphone = async (req, res) => {
+    const id = req.params.id;
+    const cellphone = req.body.telefono;
+    const response = await employeeService.createCellphone(id, cellphone);
+    return res.status(200).json(response);
+}
+
 module.exports = {
     getAllEmployees,
     getEmployeeById,
     createEmployee,
     updateEmployee,
-    deleteEmployee
+    deleteEmployee,
+    deleteCellphone,
+    addCellphone
 };
