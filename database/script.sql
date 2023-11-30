@@ -394,13 +394,8 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE TRIGGER trigger_generar_id_interno
-BEFORE INSERT ON Nuevos
-FOR EACH ROW
-EXECUTE FUNCTION generar_id_interno();
 
-
-CREATE TRIGGER trigger_generar_id_interno
+CREATE TRIGGER generar_id_interno
 BEFORE INSERT ON Nuevos
 FOR EACH ROW
 EXECUTE FUNCTION generar_id_interno();
@@ -422,4 +417,7 @@ BEGIN
 END;
 $$;
 
-alter function asignar_sucursal_cliente_nuevo() owner to postgres;
+create trigger trigger_asignar_sucursal_cliente_nuevo
+    after insert on Compra
+    for each row
+execute procedure asignar_sucursal_cliente_nuevo();
