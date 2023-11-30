@@ -338,3 +338,67 @@ WHERE (a.id, a.id_sucursal, a.id_marca, a.id_tipo) IN (
     ORDER BY a.id_sucursal, m.id, a.id_tipo, COUNT(*) DESC
 )
 ORDER BY Sucursal, Marca;
+
+-- VIEW PARA MOSTRAR
+    -- id (Tabla automotor)
+    -- modelo (Tabla automotor)
+    -- chasis (Tabla automotor)
+    -- valor (Tabla automotor)
+    -- color (Tabla color, atributo nombre)
+    -- marca (Tabla marca, atributo nombre)
+    -- linea (Tabla linea, atributo nombre)
+    -- tipo (Tabla tipo, atributo nombre)
+    -- sucursal (Tabla sucursal, atributo nombre)
+    -- estado (Mostrar si es usado o nuevo, dependiendo en que tabla se encuentre)
+
+CREATE VIEW Automotores AS
+    SELECT
+        a.id AS id,
+        a.modelo AS modelo,
+        a.chasis AS chasis,
+        a.valor AS valor,
+        c.nombre AS color,
+        m.nombre AS marca,
+        l.nombre AS linea,
+        t.nombre AS tipo,
+        s.nombre AS sucursal,
+        CASE
+            WHEN u.id_auto IS NOT NULL THEN 'Usado'
+            ELSE 'Nuevo'
+        END AS estado
+    FROM AutoMotor a
+    JOIN Color c ON a.id_color = c.id
+    JOIN Marca m ON a.id_marca = m.id
+    JOIN Linea l ON a.id_linea = l.id
+    JOIN Tipo t ON a.id_tipo = t.id
+    JOIN Sucursal s ON a.id_sucursal = s.id
+    LEFT JOIN Usados u ON a.id = u.id_auto;
+
+-- TRIGGER PARA INSERTAR EN LA TABLA NUEVOS
+-- AL INSERTAR EN LA TABLA NUEVOS UN AUTOMOTOR, GENERAR EL ATRIBUTO ID_INTERNO
+-- PARA GENERAR ESTE, TOMARA LOS ULTIMOS 8 DIGITOS DEL CHASIS, LE CONCATENARA EL id_tipo Y EL ULTIMO DIGITO DEL MODELO
+-- EJ: CHASIS = 123456789, id_tipo = 1, modelo = 2019
+-- id_interno = 2345678919
+
+-- Chasis, id_tipo, modelo son los atributos de la tabla AutoMotor
+
+CREATE OR REPLACE FUNCTION generar_id_interno() RETURNS TRIGGER AS $$
+DECLARE
+    automotor RECORD;
+BEGIN
+    SELECT chasis, id_tipo, modelo INTO automotor FROM AutoMotor WHERE id = NEW.id_auto;
+    NEW.id_interno := SUBSTRING(automotor.chasis, LENGTH(automotor.chasis) - 7) || automotor.id_tipo || SUBSTRING(automotor.modelo::text, LENGTH(automotor.modelo::text));
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trigger_generar_id_interno
+BEFORE INSERT ON Nuevos
+FOR EACH ROW
+EXECUTE FUNCTION generar_id_interno();
+
+
+CREATE TRIGGER trigger_generar_id_interno
+BEFORE INSERT ON Nuevos
+FOR EACH ROW
+EXECUTE FUNCTION generar_id_interno();
