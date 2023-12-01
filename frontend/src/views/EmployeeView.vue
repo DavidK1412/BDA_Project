@@ -24,7 +24,8 @@
 
 
         </div>
-          <button v-on:click="logout" class="btn btn-danger d-flex">
+          Sucursal: {{actualBranch}}
+          <button v-on:click="logout" class="btn btn-danger d-flex m-1">
             Cerrar sesión
           </button>
       </div>
@@ -39,15 +40,19 @@
   import Car from "../components/Car.vue";
   import Client from "../components/Client.vue";
   import Sale from "../components/Sale.vue";
+  import axios from "axios";
+  import jwtDecode from "jwt-decode";
 
   export default {
     name: 'EmployeeView',
     components: {Car, Sale, Client},
     data: function () {
       return {
+        employeeCode: jwtDecode(localStorage.getItem('token')).employeeCode,
         carView: true,
         clientView: false,
-        saleView: false
+        saleView: false,
+        actualBranch: ''
       }
     },
     methods: {
@@ -69,8 +74,21 @@
         this.carView = false;
         this.clientView = false;
         this.saleView = true;
+      },
+      getActualBranch: function(){
+        axios.get(
+            `http://localhost:3000/employees/${this.employeeCode}`,
+            {
+              headers: {
+                'Authorization': 'Bearer ' + localStorage.getItem('token')
+              }
+            }
+        ).then((response) => {
+          this.actualBranch = response.data.sucursal.nombre;
+        }).catch((error) => {
+          console.log(error);
+        })
       }
-
     },
     computed: {
       isAuthenticated: {
@@ -79,6 +97,9 @@
         },
         set: function (){}
       }
+    },
+    created: function() {
+      this.getActualBranch();
     }
   }
 </script>

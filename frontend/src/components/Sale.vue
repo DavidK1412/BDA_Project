@@ -62,6 +62,7 @@
             <th>Fecha</th>
             <th>Cliente</th>
             <th>Auto</th>
+            <th>Chasis</th>
             <th>Valor</th>
           </tr>
           </thead>
@@ -108,6 +109,7 @@
           {data: "fecha"}, // Obtiene la fecha de la venta, unicamente AAAA-MM-DD 2023-08-16T05:00:00.000Z
           {data: 'cliente.nombre'},
           {data: 'detailedAuto'},
+          {data: 'auto.chasis'},
           {data: 'auto.valor'}
         ]
       }
