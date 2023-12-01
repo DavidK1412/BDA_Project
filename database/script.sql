@@ -421,3 +421,6 @@ create trigger trigger_asignar_sucursal_cliente_nuevo
     after insert on Compra
     for each row
 execute procedure asignar_sucursal_cliente_nuevo();
+
+
+

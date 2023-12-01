@@ -3,6 +3,7 @@ const pgClient = require("../config/db.config");
 const colorService = require("./color.service");
 const lineService = require("./line.service");
 const brandService = require("./brand.service");
+const branchService = require("./branch.service");
 
 const getAllAutos = async () => {
     const response = await pgClient.query("SELECT * FROM Automotores");
@@ -16,10 +17,18 @@ const getAutoById = async (id) => {
     const auto = response.rows[0];
     const color = await colorService.getColorById(auto.id_color);
     const line = await lineService.getLineById(auto.id_linea);
+    const branch = await branchService.getBranchById(auto.id_sucursal);
     const brand = await brandService.getBrandById(line.id_marca);
+    let tipos = {
+        1: "Camion",
+        2: "Camioneta",
+        3: "Automovil",
+    }
     auto.color = color;
     auto.linea = line;
     auto.marca = brand;
+    auto.sucursal = branch;
+    auto.tipo = tipos[auto.id_tipo];
     return auto;
 }
 
@@ -31,7 +40,7 @@ const getUsedAutos = async () => {
     // Iterate over the response
     for (const res of response.rows) {
         const auto = await getAutoById(res.id_auto);
-        auto.id_interno = res.id_interno;
+        auto.placa = res.placa;
         autos.push(auto);
     }
 

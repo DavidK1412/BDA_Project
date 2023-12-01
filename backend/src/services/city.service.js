@@ -1,10 +1,8 @@
 const pgClient = require("../config/db.config");
 
 const getAllCities = async () => {
-    pgClient.query("SELECT * FROM Ciudad", (err, res) => {
-        if (err) throw err;
-        return res.rows;
-    });
+    const response = await pgClient.query("SELECT * FROM Ciudad");
+    return response.rows;
 }
 
 const getCityById = async (id) => {

@@ -9,6 +9,7 @@ const colorRouter = require('./color.router');
 const lineRouter = require('./line.router');
 const autoRouter = require('./auto.router');
 const saleRouter = require('./sale.router');
+const branchRouter = require('./branch.router');
 
 const routerApi = (app) => {
     app.use('/auth', authRouter);
@@ -20,6 +21,7 @@ const routerApi = (app) => {
     app.use('/lines', lineRouter);
     app.use('/autos', autoRouter);
     app.use('/sales', saleRouter);
+    app.use('/branches', branchRouter);
 }
 
 module.exports = routerApi;

@@ -39,7 +39,7 @@ const getEmployeeById = async (id) => {
 
 const getEmployeeByUsername = async (username) => {
     const response = await pgClient.query(
-        "SELECT * FROM Empleados_username WHERE usuario = $1", [username] 
+        "SELECT * FROM Empleados_Username WHERE usuario = $1", [username] 
     );
     return response.rows[0];
 }
