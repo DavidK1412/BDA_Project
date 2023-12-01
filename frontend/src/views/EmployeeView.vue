@@ -21,7 +21,12 @@
               <a v-on:click="loadSaleView" style="cursor:pointer;" class="nav-link" :class="{'active': saleView}">Ventas</a>
             </li>
           </ul>
+
+
         </div>
+          <button v-on:click="logout" class="btn btn-danger d-flex">
+            Cerrar sesión
+          </button>
       </div>
     </nav>
     <car v-if="carView"></car>
@@ -46,6 +51,10 @@
       }
     },
     methods: {
+      logout: function() {
+        localStorage.removeItem('token');
+        this.$router.push({name: 'LogIn'});
+      },
       loadCarView: function() {
         this.carView = true;
         this.clientView = false;

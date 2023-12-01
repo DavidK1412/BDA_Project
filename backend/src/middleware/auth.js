@@ -11,9 +11,11 @@ const login = async(username, password) => {
         return false;
     }
     if (await bcrypt.compare(password, user.contrasena)){
+        console.log(employee)
         const token = jwt.generateToken({
             id: user.id,
-            role: employee.id_cargo
+            role: employee.id_cargo,
+            employeeCode: employee.codigo
         });
         return { token: token };
     }
