@@ -9,5 +9,6 @@ router.put('/:id', employeeController.updateEmployee);
 router.delete('/:id', employeeController.deleteEmployee);
 router.delete('/:id/:cellphone', employeeController.deleteCellphone);
 router.post('/:id/cellphone', employeeController.addCellphone);
+router.get('/api/branch/:id', employeeController.getEmployeeByBranch);
 
 module.exports = router;

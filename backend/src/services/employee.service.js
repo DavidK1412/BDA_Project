@@ -24,10 +24,19 @@ const deleteCellphone = async (id, cellphone) => {
 
 const getAllEmployees = async () => {
     const response = await pgClient.query("SELECT * FROM Empleado");
+    // add branch to each employee
+    for (let i = 0; i < response.rows.length; i++) {
+        const branch = await branchService.getBranchById(response.rows[i].id_sucursal);
+        // arregla formato de fecha_nacimiento y fecha_ingreso
+        response.rows[i].fecha_nacimiento = response.rows[i].fecha_nacimiento.toISOString().split('T')[0];
+        response.rows[i].fecha_ingreso = response.rows[i].fecha_ingreso.toISOString().split('T')[0];
+        response.rows[i].sucursal = branch[0];
+    }
     return response.rows;
 };
 
 const getEmployeeById = async (id) => {
+    console.log(id);
     const response = await pgClient.query("SELECT * FROM Empleado WHERE codigo = $1", [id]);
     const employee = response.rows[0];
     const branch = await branchService.getBranchById(employee.id_sucursal);
@@ -42,6 +51,20 @@ const getEmployeeByUsername = async (username) => {
         "SELECT * FROM Empleados_Username WHERE usuario = $1", [username] 
     );
     return response.rows[0];
+}
+
+const getEmployeeByBranch = async (id) => {
+    const response = await pgClient.query(
+        "SELECT * FROM Empleado WHERE id_sucursal = $1", [id]
+    );
+    for (let i = 0; i < response.rows.length; i++) {
+        const branch = await branchService.getBranchById(response.rows[i].id_sucursal);
+        // arregla formato de fecha_nacimiento y fecha_ingreso
+        response.rows[i].fecha_nacimiento = response.rows[i].fecha_nacimiento.toISOString().split('T')[0];
+        response.rows[i].fecha_ingreso = response.rows[i].fecha_ingreso.toISOString().split('T')[0];
+        response.rows[i].sucursal = branch[0];
+    }
+    return response.rows;
 }
 
 const createEmployee = async (employee) => {
@@ -88,5 +111,6 @@ module.exports = {
     deleteEmployee,
     getCellphoneById,
     createCellphone,
-    deleteCellphone
+    deleteCellphone,
+    getEmployeeByBranch
 };

@@ -44,6 +44,13 @@ const addCellphone = async (req, res) => {
     return res.status(200).json(response);
 }
 
+const getEmployeeByBranch = async (req, res) => {
+    console.log("getEmployeeByBranch");
+    const id = req.params.id;
+    const employees = await employeeService.getEmployeeByBranch(id);
+    return res.status(200).json(employees);
+}
+
 module.exports = {
     getAllEmployees,
     getEmployeeById,
@@ -51,5 +58,6 @@ module.exports = {
     updateEmployee,
     deleteEmployee,
     deleteCellphone,
-    addCellphone
+    addCellphone,
+    getEmployeeByBranch
 };

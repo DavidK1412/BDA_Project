@@ -15,9 +15,6 @@ const logIn = async (req, res) => {
 const signUp = async (req, res) => {
     const { userId, username, employeeCode , password } = req.body;
     const bearerToken = req.headers.authorization;
-    if (jwtMiddleware.decodeToken(bearerToken).role !== 0){
-        return res.status(401).json({"message": "Unauthorized"});
-    }
     // validate if employee exists
     const employee = await employeeService.getEmployeeById(employeeCode);
     const validation = await userService.getUserByEmployeeId(employeeCode);
