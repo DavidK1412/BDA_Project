@@ -24,7 +24,7 @@
               <a v-on:click="loadSaleView" style="cursor:pointer;" class="nav-link" :class="{'active': saleView}">Ventas</a>
             </li>
             <li class="nav-item">
-              <a v-on:click="loadColorView" style="cursor:pointer;" class="nav-link" :class="{'active': colorView}">Colores</a>
+              <a v-on:click="loadColorView" style="cursor:pointer;" class="nav-link" :class="{'active': colorView}">Colores | Lineas</a>
             </li>
             <li class="nav-item">
               <a v-on:click="loadClientAdminView" style="cursor:pointer;" class="nav-link" :class="{'active': clientAdminView}">Clientes</a>

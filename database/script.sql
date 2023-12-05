@@ -357,14 +357,13 @@ SELECT * FROM marca_carros_nuevos(08, 2023);
 --  Procedure: Datos de los empleados a nivel nacional organizados por sucursal y por cargo de tal forma que sea posible identificar el empleado con mayor y menor antigüedad.
 
 CREATE OR REPLACE FUNCTION datos_empleados() RETURNS TABLE (
-    Sucursal VARCHAR,
-    Cargo VARCHAR,
-    Cedula VARCHAR,
-    Nombre VARCHAR,
-    Salario REAL,
-    FechaNacimiento DATE,
-    FechaIngreso DATE
-) AS $$
+                                                                                               Sucursal VARCHAR,
+                                                                                               Cargo VARCHAR,
+                                                                                               Cedula VARCHAR,
+                                                                                               Nombre VARCHAR,
+                                                                                               Salario REAL,
+                                                                                               FechaNacimiento DATE,
+                                                                                               FechaIngreso DATE                                                                          ) AS $$
 BEGIN
     RETURN QUERY
         SELECT

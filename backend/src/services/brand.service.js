@@ -14,8 +14,9 @@ const getBrandById = async (id) => {
 
 const createBrand = async (brand) => {
     const { id, nombre } = brand;
+    console.log(brand);
     const response = await pgClient.query(
-        "INSERT INTO marca (id, nombre) VALUES ($0, $1)", [id ,nombre]
+        "INSERT INTO marca (id, nombre) VALUES ($1, $2)", [id ,nombre]
     )
     return response;
 }
