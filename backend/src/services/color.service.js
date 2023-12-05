@@ -15,7 +15,7 @@ const getColorById = async (id) => {
 const createColor = async (color) => {
     const { id, nombre } = color;
     const response = await pgClient.query(
-        "INSERT INTO color (id, nombre) VALUES ($0, $1)", [id ,nombre]
+        "INSERT INTO color (id, nombre) VALUES ($1, $2)", [id ,nombre]
     )
     return response;
 }

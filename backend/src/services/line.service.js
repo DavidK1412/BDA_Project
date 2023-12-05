@@ -4,6 +4,10 @@ const brandService = require("./brand.service");
 const getAllLines = async () => {
     const response = await pgClient.query("SELECT * FROM linea");
     const lines = response.rows;
+    for (let i = 0; i < lines.length; i++) {
+        const brand = await brandService.getBrandById(lines[i].id_marca);
+        lines[i].marca = brand;
+    }
     return lines;
 }
 
