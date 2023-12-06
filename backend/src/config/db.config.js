@@ -1,11 +1,11 @@
 const { Pool } = require('pg');
 
 const pgClient = new Pool({
-    user: process.env.DB_USER,
-    host: process.env.DB_HOST,
-    database: process.env.DB_NAME,
-    port: process.env.DB_PORT,
-    password: process.env.DB_PASSWORD,
+    user: "DavidK1412",
+    host: "ep-lingering-silence-460483.us-east-2.aws.neon.tech",
+    database: "buenautodb",
+    port: "5432",
+    password: "jU5WLrcCkXP8",
     ssl: true
 });
 
