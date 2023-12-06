@@ -67,19 +67,18 @@ const getEmployeeByBranch = async (id) => {
     return response.rows;
 }
 
-const createEmployee = async (employee) => {
+const createClient = async (client) => {
+    const { cedula, nombre, id_ciudad, id_sucursal } = client;
+    // Obtiene fecha actual en formato YYYY-MM-DD
+    const date = new Date().toISOString().split('T')[0];
     const response = await pgClient.query(
-        "INSERT INTO Empleado(cedula, nombre, salario, fecha_nacimiento, fecha_ingreso, id_cargo, id_sucursal) VALUES($1, $2, $3, $4, $5, $6, $7)",
-        [employee.cedula, employee.nombre, employee.salario, employee.fecha_nacimiento, employee.fecha_ingreso, employee.id_cargo, employee.id_sucursal]
-    );
-    
-    const codigo = employee.cedula + employee.nombre.substring(0, 2);
-
-    const { telefonos } = employee;
+        "INSERT INTO cliente (cedula, nombre, id_ciudad, fecha_ingreso) VALUES ($1, $2, $3, $4)", [cedula, nombre, id_ciudad, date]
+    )
+    const { telefonos } = client;
     if (telefonos.length > 0 && response.rowCount > 0) {
         telefonos.forEach(async (telefono) => {
             await pgClient.query(
-                "INSERT INTO telefono_empleado (codigo_empleado, numero) VALUES ($1, $2)", [codigo, telefono]
+                "INSERT INTO telefono_cliente (cedula_cliente, numero) VALUES ($1, $2)", [cedula, telefono]
             )
         });
     }
