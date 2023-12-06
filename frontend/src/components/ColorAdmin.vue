@@ -1,5 +1,26 @@
 <template>
   <div>
+    <!-- Delete Color -->
+    <div class="modal fade" id="deleteColorModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="exampleModalLabel">Crear nuevo color</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <select v-model="newColorData.id" class="form-select mb-3">
+              <option selected>Selecciona marca</option>
+              <option v-for="color in colors" :value="color.id">{{color.nombre}}</option>
+            </select>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button v-on:click="deleteColor" type="button" class="btn btn-primary">Guardar</button>
+          </div>
+        </div>
+      </div>
+    </div>
     <!-- Crear Color -->
     <div class="modal fade" id="createColorModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
       <div class="modal-dialog">
@@ -100,6 +121,27 @@
         </div>
       </div>
     </div>
+    <!-- Editar Linea -->
+    <div class="modal fade" id="deleteLineModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="exampleModalLabel">Crear nueva linea</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <select v-model="newLineData.id" class="form-select mb-3">
+              <option selected>Selecciona marca</option>
+              <option v-for="line in lines" :value="line.id">{{line.nombre}}</option>
+            </select>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button v-on:click="deleteLine" type="button" class="btn btn-primary">Guardar</button>
+          </div>
+        </div>
+      </div>
+    </div>
     <h1 class="text-center">Gestión colores y lineas</h1>
     <div class="d-flex justify-content-center">
       <!-- Botones para cambiar entre vista y otra -->
@@ -139,6 +181,9 @@
         <button type="button" class="btn btn-primary m-2" data-bs-toggle="modal" data-bs-target="#updateColorModal">
           Editar Color
         </button>
+        <button type="button" class="btn btn-danger m-2" data-bs-toggle="modal" data-bs-target="#deleteColorModal">
+          Eliminar Color
+        </button>
         <button type="button" class="btn btn-success m-2" data-bs-toggle="modal" data-bs-target="#createColorModal">
           Crear Color
         </button>
@@ -177,6 +222,9 @@
         </DataTable>
         <button type="button" class="btn btn-primary m-2" data-bs-toggle="modal" data-bs-target="#updateLineModal">
           Editar Linea
+        </button>
+        <button type="button" class="btn btn-danger m-2" data-bs-toggle="modal" data-bs-target="#deleteLineModal">
+          Eliminar Linea
         </button>
         <button type="button" class="btn btn-success m-2" data-bs-toggle="modal" data-bs-target="#createLineModal">
           Crear Linea
@@ -301,7 +349,16 @@ export default {
           console.log(error);
         })
     },
-
+    deleteLine: function () {
+      axios.delete(`https://bda-project-d8ff.vercel.app/lines/${this.newLineData.id}`)
+        .then(response => {
+          alert('Linea eliminada');
+          this.getLines();
+        })
+        .catch(error => {
+          console.log(error);
+        })
+    },
     getBrands: function () {
       axios.get('https://bda-project-d8ff.vercel.app/brands')
         .then(response => {

@@ -62,6 +62,7 @@ export default {
       axios.delete(`https://bda-project-d8ff.vercel.app/brands/${this.newBrandData.id}`)
         .then(response => {
           this.getBrands();
+          alert('Marca eliminada');
         })
         .catch(error => {
           console.log(error);
@@ -77,6 +78,26 @@ export default {
 
 <template>
   <div>
+    <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="exampleModalLabel">Eliminar marca</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <select v-model="newBrandData.id" class="form-select mb-3">
+              <option selected>Selecciona marca</option>
+              <option v-for="brand in brands" :value="brand.id">{{brand.nombre}}</option>
+            </select>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button v-on:click="deleteBrand" type="button" class="btn btn-primary">Guardar</button>
+          </div>
+        </div>
+      </div>
+    </div>
     <!-- Editar Marca -->
     <div class="modal fade" id="exampleModal2" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
       <div class="modal-dialog">
@@ -156,6 +177,9 @@ export default {
         </DataTable>
         <button type="button" class="btn btn-primary m-2" data-bs-toggle="modal" data-bs-target="#exampleModal2">
           Editar Marca
+        </button>
+        <button type="button" class="btn btn-danger m-2" data-bs-toggle="modal" data-bs-target="#deleteModal">
+          Eliminar Marca
         </button>
         <button type="button" class="btn btn-success m-2" data-bs-toggle="modal" data-bs-target="#exampleModal">
           Crear Marca
