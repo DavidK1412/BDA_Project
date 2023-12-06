@@ -117,7 +117,7 @@
     methods: {
       getActualBranch: function(){
         axios.get(
-            `http://localhost:3000/employees/${this.employeeCode}`,
+            `https://bda-project-d8ff.vercel.app/employees/${this.employeeCode}`,
             {
               headers: {
                 'Authorization': 'Bearer ' + localStorage.getItem('token')
@@ -131,7 +131,7 @@
       },
       getSalesByEmployee: function(){
         axios.get(
-          `http://localhost:3000/sales/empleado/${this.employeeCode}`,
+          `https://bda-project-d8ff.vercel.app/sales/empleado/${this.employeeCode}`,
           {
             headers: {
               'Authorization': 'Bearer ' + localStorage.getItem('token')
@@ -145,7 +145,7 @@
       },
       getCars: function () {
          axios.get(
-          'http://localhost:3000/autos',
+          'https://bda-project-d8ff.vercel.app/autos',
           {
             headers: {
               'Authorization': 'Bearer ' + localStorage.getItem('token')
@@ -167,7 +167,7 @@
         this.newDealData.id_empleado = this.employeeCode;
         this.newDealData.fecha = new Date().toISOString().slice(0, 10);
         axios.post(
-          'http://localhost:3000/sales',
+          'https://bda-project-d8ff.vercel.app/sales',
           this.newDealData,
           {
             headers: {

@@ -129,7 +129,7 @@ export default {
       if (this.cars.find(car => car.id === carId).estado === 'Nuevo') {
         let temporalList = {};
         axios.get(
-            'http://localhost:3000/autos/new',
+            'https://bda-project-d8ff.vercel.app/autos/new',
             {
               headers: {
                 'Authorization': 'Bearer ' + localStorage.getItem('token')
@@ -146,7 +146,7 @@ export default {
       } else {
         let temporalList = {};
         axios.get(
-            'http://localhost:3000/autos/used',
+            'https://bda-project-d8ff.vercel.app/autos/used',
             {
               headers: {
                 'Authorization': 'Bearer ' + localStorage.getItem('token')
@@ -165,7 +165,7 @@ export default {
     },
     getCars: function () {
       axios.get(
-        'http://localhost:3000/autos',
+        'https://bda-project-d8ff.vercel.app/autos',
           {
             headers: {
               'Authorization': 'Bearer ' + localStorage.getItem('token')

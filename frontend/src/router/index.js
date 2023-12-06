@@ -41,7 +41,7 @@ async function ceckAuth(){
     if(!token) return false;
 
     try{
-       const result = await axios.post('http://localhost:3000/auth/verify', {"token": token});
+       const result = await axios.post('https://bda-project-d8ff.vercel.app/auth/verify', {"token": token});
        if (result.status === 200 || result.data) {
            return true;
        }

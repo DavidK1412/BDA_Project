@@ -36,7 +36,7 @@ DataTable.use(Select);
     },
     methods: {
       getCities: function () {
-        axios.get('http://localhost:3000/cities')
+        axios.get('https://bda-project-d8ff.vercel.app/cities')
             .then(response => {
               this.cities = response.data;
             }).catch(error => {
@@ -44,7 +44,7 @@ DataTable.use(Select);
         })
       },
       getClients: function () {
-        axios.get('http://localhost:3000/clients')
+        axios.get('https://bda-project-d8ff.vercel.app/clients')
             .then(response => {
               this.clients = response.data;
             })
@@ -54,7 +54,7 @@ DataTable.use(Select);
       },
       getDetailedClient: function (){
         const clientId = this.searchId;
-        axios.get(`http://localhost:3000/clients/${clientId}`)
+        axios.get(`https://bda-project-d8ff.vercel.app/clients/${clientId}`)
             .then(response => {
               this.clientDetailData = response.data;
               this.founded = true;
@@ -64,7 +64,7 @@ DataTable.use(Select);
       },
       addClientCellphone: function (){
         const clientId = this.clientDetailData.cedula;
-        axios.post(`http://localhost:3000/clients/${clientId}/cellphone`,
+        axios.post(`https://bda-project-d8ff.vercel.app/clients/${clientId}/cellphone`,
             {
               "telefono": this.newCellphone
             }
@@ -78,7 +78,7 @@ DataTable.use(Select);
         })
       },
       addClient: function() {
-        axios.post('http://localhost:3000/clients',
+        axios.post('https://bda-project-d8ff.vercel.app/clients',
             {
               "cedula": this.newClientDetail.cedula,
               "nombre": this.newClientDetail.nombre,

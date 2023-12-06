@@ -461,21 +461,21 @@ FOR EACH ROW
 EXECUTE FUNCTION generar_id_interno();
 
 
-create function asignar_sucursal_cliente_nuevo() returns trigger
+
+
+create or replace function asignar_sucursal_cliente_nuevo() returns trigger
     language plpgsql
 as
 $$
-DECLARE
-    sucursal_compra VARCHAR(36);
 BEGIN
     IF NEW.id_cliente IS NOT NULL AND (SELECT id_sucursal FROM Cliente WHERE cedula = NEW.id_cliente) IS NULL THEN
-        SELECT id_sucursal INTO sucursal_compra FROM Empleado WHERE codigo = NEW.id_empleado;
-        UPDATE Cliente SET id_sucursal = sucursal_compra WHERE cedula = NEW.id_cliente;
+        UPDATE Cliente SET id_sucursal = (SELECT id_sucursal FROM Empleado WHERE codigo = NEW.id_empleado) WHERE cedula = NEW.id_cliente;
     END IF;
-
     RETURN NEW;
 END;
 $$;
+
+DROP TRIGGER IF EXISTS trigger_asignar_sucursal_cliente_nuevo on Compra;
 
 create trigger trigger_asignar_sucursal_cliente_nuevo
     after insert on Compra

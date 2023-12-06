@@ -268,7 +268,7 @@
     methods: {
       getActualBranch: async function() {
         await axios.get(
-            `http://localhost:3000/employees/${this.employeeCode}`,
+            `https://bda-project-d8ff.vercel.app/employees/${this.employeeCode}`,
             {
               headers: {
                 'Authorization': 'Bearer ' + localStorage.getItem('token')
@@ -281,7 +281,7 @@
         ).catch((error) => {
           console.log(error);
         });
-        axios.get('http://localhost:3000/employees/api/branch/' + this.actualBranchId)
+        axios.get('https://bda-project-d8ff.vercel.app/employees/api/branch/' + this.actualBranchId)
             .then((response) => {
               console.log(response.data);
               this.employees = response.data;
@@ -292,7 +292,7 @@
       },
       submitEmployee: function () {
         this.employeePrototype.id_sucursal = this.actualBranchId;
-        axios.post('http://localhost:3000/employees', this.employeePrototype)
+        axios.post('https://bda-project-d8ff.vercel.app/employees', this.employeePrototype)
             .then((response) => {
               console.log(response.data);
               this.clearProtoEmployee();
@@ -317,7 +317,7 @@
       },
       getSelectedEmployee: function () {
         const id = this.selectedEmployee;
-        axios.get('http://localhost:3000/employees/' + id)
+        axios.get('https://bda-project-d8ff.vercel.app/employees/' + id)
             .then((response) => {
               console.log(response.data);
               this.employeePrototype.cedula = response.data.cedula;
@@ -335,7 +335,7 @@
       },
       updateEmployee: function () {
         const id = this.selectedEmployee;
-        axios.put('http://localhost:3000/employees/' + id, this.employeePrototype)
+        axios.put('https://bda-project-d8ff.vercel.app/employees/' + id, this.employeePrototype)
             .then((response) => {
               console.log(response.data);
               this.clearProtoEmployee();
@@ -348,7 +348,7 @@
       },
 addAssociatedUser: function () {
         this.associatedUserPrototype.userId = crypto.randomUUID();
-        axios.post('http://localhost:3000/auth/signup', this.associatedUserPrototype,
+        axios.post('https://bda-project-d8ff.vercel.app/auth/signup', this.associatedUserPrototype,
             {
               headers: {
                 Authorization: 'Bearer ' + localStorage.getItem('token')

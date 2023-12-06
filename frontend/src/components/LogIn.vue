@@ -61,7 +61,7 @@
     methods: {
       logIn: function (){
         axios.post(
-          'http://localhost:3000/auth/login',
+          'https://bda-project-d8ff.vercel.app/auth/login',
           this.user
         ).then((response) => {
           localStorage.setItem('token', response.data.token);

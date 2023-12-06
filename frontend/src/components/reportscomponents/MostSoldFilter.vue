@@ -30,7 +30,7 @@ export default {
   },
   methods: {
     getMostSold: function () {
-      axios.get(`http://localhost:3000/special/most-sold/${this.selectedStatus}/${this.selectedMonth}/${this.selectedYear}`)
+      axios.get(`https://bda-project-d8ff.vercel.app/special/most-sold/${this.selectedStatus}/${this.selectedMonth}/${this.selectedYear}`)
         .then(response => {
           this.results = response.data;
         })

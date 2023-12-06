@@ -173,7 +173,7 @@
       },
       getActualBranch: function(){
         axios.get(
-            `http://localhost:3000/employees/${this.employeeCode}`,
+            `https://bda-project-d8ff.vercel.app/employees/${this.employeeCode}`,
             {
               headers: {
                 'Authorization': 'Bearer ' + localStorage.getItem('token')

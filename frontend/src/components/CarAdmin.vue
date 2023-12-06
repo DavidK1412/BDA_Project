@@ -71,7 +71,7 @@ export default {
       if (this.cars.find(car => car.id === carId).estado === 'Nuevo') {
         let temporalList = {};
         axios.get(
-            'http://localhost:3000/autos/new',
+            'https://bda-project-d8ff.vercel.app/autos/new',
             {
               headers: {
                 'Authorization': 'Bearer ' + localStorage.getItem('token')
@@ -88,7 +88,7 @@ export default {
       } else {
         let temporalList = {};
         axios.get(
-            'http://localhost:3000/autos/used',
+            'https://bda-project-d8ff.vercel.app/autos/used',
             {
               headers: {
                 'Authorization': 'Bearer ' + localStorage.getItem('token')
@@ -107,7 +107,7 @@ export default {
     },
     getCars: function () {
       axios.get(
-          'http://localhost:3000/autos',
+          'https://bda-project-d8ff.vercel.app/autos',
           {
             headers: {
               'Authorization': 'Bearer ' + localStorage.getItem('token')
@@ -120,7 +120,7 @@ export default {
     },
     getBrands: function () {
       axios.get(
-          'http://localhost:3000/brands',
+          'https://bda-project-d8ff.vercel.app/brands',
           {
             headers: {
               'Authorization': 'Bearer ' + localStorage.getItem('token')
@@ -133,7 +133,7 @@ export default {
     },
     getColors: function () {
       axios.get(
-          'http://localhost:3000/colors',
+          'https://bda-project-d8ff.vercel.app/colors',
           {
             headers: {
               'Authorization': 'Bearer ' + localStorage.getItem('token')
@@ -145,7 +145,7 @@ export default {
       });
     },
     getLines: function (){
-      axios.get('http://localhost:3000/lines')
+      axios.get('https://bda-project-d8ff.vercel.app/lines')
           .then(response => {
             this.lines = response.data;
           })
@@ -156,12 +156,12 @@ export default {
     createCar: function () {
       this.newCarData.id = crypto.randomUUID();
       this.newCarData.id_sucursal = this.actualBranchId;
-      axios.post('http://localhost:3000/autos', this.newCarData)
+      axios.post('https://bda-project-d8ff.vercel.app/autos', this.newCarData)
           .then(response => {
 
             if(response.status === 200){
               if(this.isNew){
-                axios.post('http://localhost:3000/autos/new', {
+                axios.post('https://bda-project-d8ff.vercel.app/autos/new', {
                   id_auto: this.newCarData.id,
                 })
                     .then(response => {
@@ -172,7 +172,7 @@ export default {
                       console.log(error);
                     })
               } else {
-                axios.post('http://localhost:3000/autos/used', {
+                axios.post('https://bda-project-d8ff.vercel.app/autos/used', {
                   id_auto: this.newCarData.id,
                   placa: this.placa,
                 })

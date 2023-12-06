@@ -12,7 +12,7 @@ export default {
   },
   methods: {
     getNewClientsNumber: function () {
-      axios.get(`http://localhost:3000/special/new-clients/${this.mes}/${this.anio}`)
+      axios.get(`https://bda-project-d8ff.vercel.app/special/new-clients/${this.mes}/${this.anio}`)
           .then(response => {
             console.log(response.data);
             this.newClientsNumber = response.data[0].consolidado_clientes_nuevos;

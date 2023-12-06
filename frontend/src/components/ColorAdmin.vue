@@ -232,7 +232,7 @@ export default {
   },
   methods: {
     getColors: function () {
-      axios.get('http://localhost:3000/colors')
+      axios.get('https://bda-project-d8ff.vercel.app/colors')
         .then(response => {
           this.colors = response.data;
         })
@@ -242,7 +242,7 @@ export default {
     },
     createColor: function () {
       this.newColorData.id = crypto.randomUUID();
-      axios.post('http://localhost:3000/colors', this.newColorData)
+      axios.post('https://bda-project-d8ff.vercel.app/colors', this.newColorData)
         .then(response => {
           alert('Color creado');
           this.getColors();
@@ -252,7 +252,7 @@ export default {
         })
     },
     updateColor: function () {
-      axios.put(`http://localhost:3000/colors/${this.newColorData.id}`, this.newColorData)
+      axios.put(`https://bda-project-d8ff.vercel.app/colors/${this.newColorData.id}`, this.newColorData)
         .then(response => {
           alert('Color actualizado');
           this.getColors();
@@ -262,7 +262,7 @@ export default {
         })
     },
     deleteColor: function () {
-      axios.delete(`http://localhost:3000/colors/${this.newColorData.id}`)
+      axios.delete(`https://bda-project-d8ff.vercel.app/colors/${this.newColorData.id}`)
         .then(response => {
           alert('Color eliminado');
           this.getColors();
@@ -272,7 +272,7 @@ export default {
         })
     },
     getLines: function () {
-      axios.get('http://localhost:3000/lines')
+      axios.get('https://bda-project-d8ff.vercel.app/lines')
         .then(response => {
           this.lines = response.data;
         })
@@ -282,7 +282,7 @@ export default {
     },
     createLine: function () {
       this.newLineData.id = crypto.randomUUID();
-      axios.post('http://localhost:3000/lines', this.newLineData)
+      axios.post('https://bda-project-d8ff.vercel.app/lines', this.newLineData)
         .then(response => {
           alert('Linea creada');
           this.getLines();
@@ -292,7 +292,7 @@ export default {
         })
     },
     updateLine: function () {
-      axios.put(`http://localhost:3000/lines/${this.newLineData.id}`, this.newLineData)
+      axios.put(`https://bda-project-d8ff.vercel.app/lines/${this.newLineData.id}`, this.newLineData)
         .then(response => {
           alert('Linea actualizada');
           this.getLines();
@@ -303,7 +303,7 @@ export default {
     },
 
     getBrands: function () {
-      axios.get('http://localhost:3000/brands')
+      axios.get('https://bda-project-d8ff.vercel.app/brands')
         .then(response => {
           this.brands = response.data;
         })

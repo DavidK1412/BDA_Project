@@ -31,7 +31,7 @@ export default {
   },
   methods: {
     getClients: function () {
-      axios.get(`http://localhost:3000/special/employee-detailed/`)
+      axios.get(`https://bda-project-d8ff.vercel.app/special/employee-detailed/`)
         .then(response => {
           this.employees = response.data;
         })

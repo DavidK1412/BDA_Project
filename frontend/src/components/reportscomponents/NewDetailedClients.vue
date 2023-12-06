@@ -29,7 +29,7 @@ export default {
   },
   methods: {
     getClients: function () {
-      axios.get(`http://localhost:3000/special/new-clients-detailed/${this.month}/${this.year}`)
+      axios.get(`https://bda-project-d8ff.vercel.app/special/new-clients-detailed/${this.month}/${this.year}`)
         .then(response => {
           this.clients = response.data;
         })

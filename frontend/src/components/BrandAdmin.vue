@@ -29,7 +29,7 @@ export default {
   },
   methods: {
     getBrands: function () {
-      axios.get('http://localhost:3000/brands')
+      axios.get('https://bda-project-d8ff.vercel.app/brands')
         .then(response => {
           this.brands = response.data;
         })
@@ -39,7 +39,7 @@ export default {
     },
     createBrand: function () {
       this.newBrandData.id = crypto.randomUUID();
-      axios.post('http://localhost:3000/brands', this.newBrandData)
+      axios.post('https://bda-project-d8ff.vercel.app/brands', this.newBrandData)
         .then(response => {
           alert('Marca creada');
           this.getBrands();
@@ -49,7 +49,7 @@ export default {
         })
     },
     updateBrand: function () {
-      axios.put(`http://localhost:3000/brands/${this.newBrandData.id}`, this.newBrandData)
+      axios.put(`https://bda-project-d8ff.vercel.app/brands/${this.newBrandData.id}`, this.newBrandData)
         .then(response => {
           alert('Marca actualizada');
           this.getBrands();
@@ -59,7 +59,7 @@ export default {
         })
     },
     deleteBrand: function () {
-      axios.delete(`http://localhost:3000/brands/${this.newBrandData.id}`)
+      axios.delete(`https://bda-project-d8ff.vercel.app/brands/${this.newBrandData.id}`)
         .then(response => {
           this.getBrands();
         })

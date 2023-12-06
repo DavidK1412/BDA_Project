@@ -33,7 +33,7 @@ export default {
   methods: {
     getSalesByBranch: function (){
       axios.get(
-        `http://localhost:3000/sales/sucursal/${this.actualBranchId}`,
+        `https://bda-project-d8ff.vercel.app/sales/sucursal/${this.actualBranchId}`,
         {
           headers: {
             'Authorization': 'Bearer ' + localStorage.getItem('token')
