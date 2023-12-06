@@ -53,8 +53,10 @@ const getClientById = async (id) => {
 
 const createClient = async (client) => {
     const { cedula, nombre, id_ciudad, id_sucursal } = client;
+    // Obtiene fecha actual en formato YYYY-MM-DD
+    const date = new Date().toISOString().split('T')[0];
     const response = await pgClient.query(
-        "INSERT INTO cliente (cedula, nombre, id_ciudad) VALUES ($1, $2, $3)", [cedula, nombre, id_ciudad]
+        "INSERT INTO cliente (cedula, nombre, id_ciudad, fecha_ingreso) VALUES ($1, $2, $3, $4)", [cedula, nombre, id_ciudad, date]
     )
     const { telefonos } = client;
     if (telefonos.length > 0 && response.rowCount > 0) {
