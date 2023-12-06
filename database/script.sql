@@ -253,50 +253,40 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-SELECT consolidado_clientes_nuevos(11, 2023);
+SELECT * FROM consolidado_clientes_nuevos(11, 2023);
 
 -- Procedimiento: Consolidado mensual y anual de la marca de la cual se han vendido más automotores en cada sucursal, permitiendo clasificarlos en nuevos o usados.
-    -- Recibe parametro, el estado del vehiculo
+    -- Recibe parametro, el estado del vehiculo, mes y año
 DROP FUNCTION IF EXISTS consolidado_mensual_anual(estado_vehiculo VARCHAR);
 
-CREATE OR REPLACE FUNCTION consolidado_mensual_anual(estado_vehiculo VARCHAR)
-    RETURNS TABLE (
-                      Sucursal VARCHAR,
-                      Anio INTEGER,
-                      Mes INTEGER,
-                      Estado VARCHAR,
-                      Marca VARCHAR,
-                      CantidadVentas BIGINT
-                  ) AS $$
-BEGIN
-    RETURN QUERY
-        SELECT
-            s.nombre AS Sucursal,
-            EXTRACT(YEAR FROM c.fecha)::INTEGER AS Anio,
-            EXTRACT(MONTH FROM c.fecha)::INTEGER AS Mes,
-            CASE
-                WHEN u.id_auto IS NOT NULL THEN 'Usado'::VARCHAR
-                ELSE 'Nuevo'::VARCHAR
-                END AS Estado,
-            m.nombre AS Marca,
-            COUNT(*) AS CantidadVentas
-        FROM Compra c
-                 INNER JOIN AutoMotor a ON c.id_auto = a.id
-                 LEFT JOIN Usados u ON a.id = u.id_auto
-                 JOIN Sucursal s ON a.id_sucursal = s.id
-                 JOIN Marca m ON a.id_marca = m.id
-        WHERE c.fecha IS NOT NULL
-          AND (estado_vehiculo IS NULL OR
-               (estado_vehiculo = 'Nuevo' AND u.id_auto IS NULL) OR
-               (estado_vehiculo = 'Usado' AND u.id_auto IS NOT NULL))
-        GROUP BY Sucursal, Anio, Mes, Estado, Marca
-        ORDER BY Sucursal, Anio, Mes, Estado, CantidadVentas DESC;
+CREATE OR REPLACE FUNCTION consolidado_mensual_anual(estado_vehiculo VARCHAR, mes INT, anio INT) RETURNS TABLE (
+    Sucursal VARCHAR,
+    Marca VARCHAR,
+    Cantidad BIGINT
+) AS $$
+    BEGIN
+        RETURN QUERY
+            SELECT
+                s.nombre AS Sucursal,
+                m.nombre AS Marca,
+                COUNT(*) AS Cantidad
+            FROM Compra c
+                     JOIN AutoMotor a ON c.id_auto = a.id
+                     JOIN Sucursal s ON a.id_sucursal = s.id
+                     JOIN Marca m ON a.id_marca = m.id
+            WHERE EXTRACT(MONTH FROM c.fecha) = mes
+              AND EXTRACT(YEAR FROM c.fecha) = anio
+              AND a.id NOT IN (SELECT id_auto FROM Usados)
+              AND a.id IN (SELECT id_auto FROM Nuevos)
+            GROUP BY Sucursal, Marca
+            ORDER BY Sucursal, Cantidad DESC;
 
-    RETURN;
-END;
+        RETURN;
+    END;
 $$ LANGUAGE plpgsql;
 
-SELECT * FROM consolidado_mensual_anual('Nuevo');
+
+SELECT * FROM consolidado_mensual_anual('Nuevo', 8, 2023);
 
 
 -- Procedimiento: Datos de los clientes nuevos. Estos datos organizados por sucursal en un mes particular.
@@ -352,18 +342,15 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-SELECT * FROM marca_carros_nuevos(08, 2023);
+SELECT * FROM marca_carros_nuevos(12, 2023);
 
 --  Procedure: Datos de los empleados a nivel nacional organizados por sucursal y por cargo de tal forma que sea posible identificar el empleado con mayor y menor antigüedad.
 
-CREATE OR REPLACE FUNCTION datos_empleados() RETURNS TABLE (
-                                                                                               Sucursal VARCHAR,
-                                                                                               Cargo VARCHAR,
-                                                                                               Cedula VARCHAR,
-                                                                                               Nombre VARCHAR,
-                                                                                               Salario REAL,
-                                                                                               FechaNacimiento DATE,
-                                                                                               FechaIngreso DATE                                                                          ) AS $$
+create function datos_empleados()
+    returns TABLE(sucursal character varying, cargo character varying, cedula character varying, nombre character varying, salario real, fechanacimiento date, fechaingreso date)
+    language plpgsql
+as
+$$
 BEGIN
     RETURN QUERY
         SELECT
@@ -381,9 +368,10 @@ BEGIN
 
     RETURN;
 END;
-$$ LANGUAGE plpgsql;
+$$;
 
 SELECT * FROM datos_empleados();
+
 
 -- VIEW PARA MOSTRAR
     -- id (Tabla automotor)
@@ -419,6 +407,35 @@ CREATE VIEW Automotores AS
     JOIN Tipo t ON a.id_tipo = t.id
     JOIN Sucursal s ON a.id_sucursal = s.id
     LEFT JOIN Usados u ON a.id = u.id_auto;
+
+-- Editar vista para mostrar los automotores que no han sido vendidos
+
+DROP VIEW Automotores;
+
+CREATE VIEW Automotores AS
+    SELECT
+        a.id AS id,
+        a.modelo AS modelo,
+        a.chasis AS chasis,
+        a.valor AS valor,
+        c.nombre AS color,
+        m.nombre AS marca,
+        l.nombre AS linea,
+        t.nombre AS tipo,
+        s.nombre AS sucursal,
+        CASE
+            WHEN u.id_auto IS NOT NULL THEN 'Usado'
+            ELSE 'Nuevo'
+        END AS estado
+    FROM AutoMotor a
+    JOIN Color c ON a.id_color = c.id
+    JOIN Marca m ON a.id_marca = m.id
+    JOIN Linea l ON a.id_linea = l.id
+    JOIN Tipo t ON a.id_tipo = t.id
+    JOIN Sucursal s ON a.id_sucursal = s.id
+    LEFT JOIN Usados u ON a.id = u.id_auto
+    WHERE a.id NOT IN (SELECT id_auto FROM Compra);
+
 -- TRIGGER PARA INSERTAR EN LA TABLA NUEVOS
 -- AL INSERTAR EN LA TABLA NUEVOS UN AUTOMOTOR, GENERAR EL ATRIBUTO ID_INTERNO
 -- PARA GENERAR ESTE, TOMARA LOS ULTIMOS 8 DIGITOS DEL CHASIS, LE CONCATENARA EL id_tipo Y EL ULTIMO DIGITO DEL MODELO

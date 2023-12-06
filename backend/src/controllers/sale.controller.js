@@ -14,7 +14,7 @@ const getSaleById = async (req, res) => {
 const createSale = async (req, res) => {
     const sale = req.body;
     const newSale = await saleService.createSale(sale);
-    res.status(201).json(newSale);
+    res.status(200).json(newSale);
 }
 
 const getSaleByClientId = async (req, res) => {

@@ -10,6 +10,7 @@ const lineRouter = require('./line.router');
 const autoRouter = require('./auto.router');
 const saleRouter = require('./sale.router');
 const branchRouter = require('./branch.router');
+const specialRouter = require('./special.router');
 
 const routerApi = (app) => {
     app.use('/auth', authRouter);
@@ -22,6 +23,7 @@ const routerApi = (app) => {
     app.use('/autos', autoRouter);
     app.use('/sales', saleRouter);
     app.use('/branches', branchRouter);
+    app.use('/special', specialRouter);
 }
 
 module.exports = routerApi;

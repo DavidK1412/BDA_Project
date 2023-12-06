@@ -39,6 +39,7 @@
       </div>
     </div>
     <div class="col-lg-8 offset-lg-2">
+      <h3 class="text-center">Sólo se muestran autos que no han sido vendidos</h3>
       <div class="table-responsive">
         <DataTable ref="table" :data="cars" :columns="colums" class="table table-striped table-bordered display"
         :options="{

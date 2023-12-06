@@ -1,5 +1,6 @@
 const autoService = require('../services/auto.service');
 const clientService = require('../services/client.service');
+const employeeService = require('../services/employee.service');
 const pgClient = require('../config/db.config');
 
 const getAllSales = async () => {
@@ -55,6 +56,16 @@ const getSalesByBranchId = async (id) => {
         'SELECT * FROM compra WHERE id_empleado IN (SELECT codigo FROM empleado WHERE id_sucursal = $1)',
         [id]
     )
+    for (const s of sale.rows) {
+        const client = await clientService.getClientById(s.id_cliente);
+        const auto = await autoService.getAutoById(s.id_auto);
+        const vendedor = await employeeService.getEmployeeById(s.id_empleado);
+        s.fecha = s.fecha.toISOString().split('T')[0];
+        s.auto = auto;
+        s.cliente = client;
+        s.vendedor = vendedor;
+        s.detailedAuto = s.auto.marca.nombre + " " + s.auto.linea.nombre + " " + s.auto.modelo;
+    }
     return sale.rows;
 }
 

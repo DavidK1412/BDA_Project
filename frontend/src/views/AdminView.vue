@@ -50,7 +50,7 @@
     <sales-admin v-if="SalesAdminView"></sales-admin>
     <sale v-if="saleView"></sale>
     <color-admin v-if="colorView"></color-admin>
-    <client-admin v-if="clientAdminView"></client-admin>
+    <client v-if="clientAdminView"></client>
     <employee-admin v-if="employeeAdminView"></employee-admin>
     <special-reports v-if="specialReportsView"></special-reports>
   </div>
@@ -67,10 +67,11 @@
   import ClientAdmin from "../components/ClientAdmin.vue";
   import EmployeeAdmin from "../components/EmployeeAdmin.vue";
   import SpecialReports from "../components/SpecialReports.vue";
+  import Client from "../components/Client.vue";
 
   export default {
     name: 'AdminView',
-    components: {BrandAdmin, CarAdmin, SalesAdmin, Sale, ColorAdmin, ClientAdmin, EmployeeAdmin, SpecialReports},
+    components: {Client, BrandAdmin, CarAdmin, SalesAdmin, Sale, ColorAdmin, ClientAdmin, EmployeeAdmin, SpecialReports},
     data: function () {
       return {
         employeeCode: jwtDecode(localStorage.getItem('token')).employeeCode,
