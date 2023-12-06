@@ -4,7 +4,8 @@ const generateToken = (user) => {
     const tokenData = {
         id: user.id,
         role: user.role,
-        employeeCode: user.employeeCode
+        employeeCode: user.employeeCode,
+        branchId: user.branchId
     };
 
     console.log(tokenData);

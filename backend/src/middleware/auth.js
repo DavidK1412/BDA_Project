@@ -15,7 +15,8 @@ const login = async(username, password) => {
         const token = jwt.generateToken({
             id: user.id,
             role: employee.id_cargo,
-            employeeCode: employee.codigo
+            employeeCode: employee.codigo,
+            branchId: employee.id_sucursal
         });
         return { token: token };
     }

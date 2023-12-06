@@ -64,9 +64,22 @@ const getNewAutos = async () => {
 }
 
 const createAuto = async (auto) => {
-    const { id, modelo, chasis, valor, id_color, id_linea, id_tipo, id_sucursal } = auto;
+    const { id, modelo, chasis, valor, id_color, id_linea, id_tipo, id_sucursal, id_marca } = auto;
     return await pgClient.query(
-        "INSERT INTO automotor (id, modelo, chasis, valor, id_color, id_linea, id_tipo, id_sucursal) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)", [id, modelo, chasis, valor, id_color, id_linea, id_tipo, id_sucursal]
+        // Inserta id, modelo, chasis, valor, id_color, id_linea, id_tipo, id_sucursal, id_marca
+        "INSERT INTO automotor(id, modelo, chasis, valor, id_color, id_linea, id_tipo, id_sucursal, id_marca) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)", [id, modelo, chasis, valor, id_color, id_linea, id_tipo, id_sucursal, id_marca]
+    );
+}
+
+const setUsedAuto = async (id_auto, placa) => {
+    return await pgClient.query(
+        "INSERT INTO usados (id_auto, placa) VALUES ($1, $2)", [id_auto.id_auto, id_auto.placa]
+    );
+}
+
+const setNewAuto = async (id_auto) => {
+    return await pgClient.query(
+        "INSERT INTO nuevos (id_auto) VALUES ($1)", [id_auto.id_auto]
     );
 }
 
@@ -91,5 +104,7 @@ module.exports = {
     getNewAutos,
     createAuto,
     updateAuto,
-    deleteAuto
+    deleteAuto,
+    setUsedAuto,
+    setNewAuto
 };
